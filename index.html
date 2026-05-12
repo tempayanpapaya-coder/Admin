@@ -279,7 +279,7 @@ Tutup
                 <option>Putih</option><option>Kuning</option><option>Hijau</option>
                 <option>Biru</option><option>Merah</option><option>Hitam</option>
             </select>
-            <label>Status Kewajiban Bulan Ini</label>
+           <label>Status Kas Mingguan</label>
             <select id="form-status">
                 <option value="Belum Lunas">Belum Lunas</option>
                 <option value="Lunas">Lunas</option>
@@ -315,6 +315,21 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+function getMingguKey() {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now - firstDay) / (24 * 60 * 60 * 1000));
+    const week = Math.ceil((days + firstDay.getDay() + 1) / 7);
+
+    return `${now.getFullYear()}-Minggu-${week}`;
+}
+function getCurrentWeekNumber() {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now - firstDay) / (24 * 60 * 60 * 1000));
+
+    return Math.ceil((days + firstDay.getDay() + 1) / 7);
+}
 
 // --- JAM REALTIME ---
 setInterval(() => {
@@ -326,8 +341,7 @@ setInterval(() => {
 // --- LOAD DATA (DENGAN LOGIKA TOMBOL PERINGATAN BARU) ---
 function loadData() {
     const cari = document.getElementById("searchInput").value.toLowerCase();
-    const bulanNow = new Date().toISOString().slice(0, 7); // Format: 2026-05
-
+    const mingguNow = getMingguKey();
     db.collection("siswa").onSnapshot(snapshot => {
         let html = "";
         let total = 0, lunas = 0, belum = 0;
@@ -339,20 +353,32 @@ function loadData() {
             total++;
             
             // 1. Cek Status Lunas
-            const isLunas = d.bulan_bayar === bulanNow;
+            const isLunas = d.minggu_bayar === mingguNow;
             isLunas ? lunas++ : belum++;
 
-            // 2. Logika Tampilan Tombol Peringatan
-            // Tombol muncul jika: Belum Lunas DAN (Belum pernah ditegur ATAU sudah dilihat member)
-            let tombolPeringatan = "";
-            if (!isLunas) {
-                const sedangDiperingatkan = d.peringatan === true;
-                const sudahDilihat = d.peringatan_dilihat === true;
+           let tombolPeringatan = "";
 
-                if (!sedangDiperingatkan || sudahDilihat) {
-                    tombolPeringatan = `<button class="btn btn-caution" onclick="peringatkan('${doc.id}')">⚠️</button>`;
-                }
-            }
+const mingguSekarang = getCurrentWeekNumber();
+
+let mingguBayar = 0;
+
+if (d.minggu_bayar) {
+    const pecah = d.minggu_bayar.split("-Minggu-");
+    mingguBayar = parseInt(pecah[1]) || 0;
+}
+
+const belumBayarMingguIni = mingguBayar < mingguSekarang;
+
+if (belumBayarMingguIni) {
+    const sedangDiperingatkan = d.peringatan === true;
+    const sudahDilihat = d.peringatan_dilihat === true;
+
+    if (!sedangDiperingatkan || sudahDilihat) {
+        tombolPeringatan =
+        `<button class="btn btn-caution"
+        onclick="peringatkan('${doc.id}')">⚠️</button>`;
+    }
+}
 
             html += `
             <tr>
@@ -374,7 +400,7 @@ function loadData() {
         document.getElementById("totalMember").innerText = total;
         document.getElementById("totalLunas").innerText = lunas;
         document.getElementById("totalBelum").innerText = belum;
-        document.getElementById("pemasukan").innerText = "Rp" + (lunas * 20000).toLocaleString("id-ID");
+        document.getElementById("pemasukan").innerText = "Rp" + (lunas * 5000).toLocaleString("id-ID");
     });
 }
 
@@ -391,17 +417,17 @@ function peringatkan(id) {
 
 // --- FUNGSI BAYAR (UPDATE) ---
 function bayar(id) {
-    if (!confirm("Catat pembayaran bulan ini?")) return;
-    const bulanIni = new Date().toISOString().slice(0, 7);
+    if (!confirm("Catat pembayaran kas minggu ini?")) return;
+   const mingguIni = getMingguKey();
     const ref = db.collection("siswa").doc(id);
 
     ref.get().then(doc => {
-        let riwayat = doc.data().riwayat_bayar || [];
-        if (!riwayat.includes(bulanIni)) riwayat.push(bulanIni);
+        let riwayat = doc.data().riwayat_kas || [];
+        if (!riwayat.includes(mingguIni)) riwayat.push(mingguIni);
         
         ref.update({ 
-            bulan_bayar: bulanIni, 
-            riwayat_bayar: riwayat, 
+            minggu_bayar: mingguIni, 
+            riwayat_kas: riwayat, 
             peringatan: false,           // Hapus status peringatan
             peringatan_dilihat: false    // Reset status lihat
         });
@@ -422,7 +448,7 @@ document.getElementById("studentForm").onsubmit = function(e) {
     e.preventDefault();
     const id = document.getElementById("student-id").value;
     const status = document.getElementById("form-status").value;
-    const bulanNow = new Date().toISOString().slice(0, 7);
+    const mingguNow = getMingguKey();
 
     let data = {
         nama: document.getElementById("form-nama").value,
@@ -433,7 +459,7 @@ document.getElementById("studentForm").onsubmit = function(e) {
         berat_badan: document.getElementById("form-berat").value,
         tinggi_badan: document.getElementById("form-tinggi").value,
         warna_sabuk: document.getElementById("form-sabuk").value,
-        bulan_bayar: status === "Lunas" ? bulanNow : ""
+        minggu_bayar: status === "Lunas" ? mingguNow : ""
     };
 
     if (id) {
@@ -447,7 +473,7 @@ document.getElementById("studentForm").onsubmit = function(e) {
 function editData(id) {
     db.collection("siswa").doc(id).get().then(doc => {
         const d = doc.data();
-        const bulanNow = new Date().toISOString().slice(0, 7);
+        const mingguNow = new Date().toISOString().slice(0, 7);
         document.getElementById("student-id").value = id;
         document.getElementById("form-nama").value = d.nama || "";
         document.getElementById("form-username").value = d.username || "";
@@ -457,7 +483,7 @@ function editData(id) {
         document.getElementById("form-berat").value = d.berat_badan || "";
         document.getElementById("form-tinggi").value = d.tinggi_badan || "";
         document.getElementById("form-sabuk").value = d.warna_sabuk || "Putih";
-        document.getElementById("form-status").value = d.bulan_bayar === bulanNow ? "Lunas" : "Belum Lunas";
+        document.getElementById("form-status").value = d.minggu_bayar === mingguNow ? "Lunas" : "Belum Lunas";
         document.getElementById("modalTitle").innerText = "Edit Member";
         document.getElementById("studentModal").style.display = "block";
     });
@@ -469,10 +495,10 @@ function hapus(id) {
 
 function lihatRiwayat(id) {
     db.collection("siswa").doc(id).get().then(doc => {
-        const riwayat = doc.data().riwayat_bayar || [];
+        const riwayat = doc.data().riwayat_kas || [];
         let html = riwayat.length ? "" : "<p>Belum ada riwayat.</p>";
         riwayat.sort().reverse().forEach(b => {
-            html += `<div style="padding:10px; margin:5px 0; background:#f3f4f6; border-radius:8px; color:#111;">✅ Bulan: ${b}</div>`;
+           html += `<div style="padding:10px; margin:5px 0; background:#f3f4f6; border-radius:8px; color:#111;">✅ Kas Mingguan: ${b}</div>`;
         });
         document.getElementById("historyContent").innerHTML = html;
         document.getElementById("historyModal").style.display = "block";
@@ -483,13 +509,14 @@ function closeHistory() { document.getElementById("historyModal").style.display 
 
 function exportExcel(){
     db.collection("siswa").get().then(snapshot=>{
+      const mingguNow = getMingguKey();
         const bulanNow = new Date().toISOString().slice(0,7);
         let rows = [["BMI TAEKWONDO ACADEMY"], ["Management Member System"], [], ["NO","NAMA","USERNAME","PASSWORD","NO HP","TANGGAL LAHIR","BERAT","TINGGI","SABUK","STATUS","RIWAYAT"]];
         let no = 1;
         snapshot.forEach(doc=>{
             const d = doc.data();
-            const status = d.bulan_bayar === bulanNow ? "LUNAS" : "BELUM";
-            rows.push([no++, d.nama || "-", d.username || "-", d.password || "-", d.nomor_hp || "-", d.tanggal_lahir || "-", (d.berat_badan || 0), (d.tinggi_badan || 0), d.warna_sabuk || "-", status, (d.riwayat_bayar || []).join(", ")]);
+            const status = d.minggu_bayar === mingguNow ? "LUNAS" : "BELUM";
+            rows.push([no++, d.nama || "-", d.username || "-", d.password || "-", d.nomor_hp || "-", d.tanggal_lahir || "-", (d.berat_badan || 0), (d.tinggi_badan || 0), d.warna_sabuk || "-", status, (d.riwayat_kas || []).join(", ")]);
         });
         const ws = XLSX.utils.aoa_to_sheet(rows);
         const wb = XLSX.utils.book_new();
