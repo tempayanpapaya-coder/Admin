@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Taekwondo Academy - Admin Dashboard</title>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+            min-height: 100vh;
+            padding: 15px;
+            color: #fff;
+        }
+
+        /* HEADER & CARDS */
+        .header {
+            background: rgba(255,255,255,.10);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 22px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        
+        .clock-box {
+            background: #000; color: #39ff14; padding: 10px 20px;
+            border-radius: 16px; font-family: monospace; text-align: center;
+            box-shadow: 0 0 10px rgba(57,255,20,0.3);
+        }
+
+        .actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        /* BUTTONS */
+        .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #fff; transition: .2s; font-size: 13px; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .btn-add { background: #22c55e; }
+        .btn-export { background: #8b5cf6; }
+        .btn-edit { background: #3b82f6; }
+        .btn-pay { background: #14b8a6; }
+        .btn-delete { background: #ef4444; }
+        .btn-caution { background: #f59e0b; color: #000; }
+
+        /* SEARCH & STATS */
+        .search-box input { width: 100%; padding: 12px; border-radius: 12px; border: none; margin: 15px 0; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .card { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; text-align: center; }
+        .card .num { font-size: 24px; font-weight: 800; margin-top: 5px; }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; background: rgba(255,255,255,0.05); border-radius: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: rgba(255,255,255,0.1); padding: 12px; text-align: left; font-size: 14px; }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; 
+          vertical-align:middle;
+          font-weight:600;
+        }
+        .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; }
+        .green { background: #16a34a; }
+        .red { background: #dc2626; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
+        .modal-content { background: white; color: #333; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-content label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; }
+
+        .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 12px; }
+        .schedule-admin-card{
+
+background:rgba(255,255,255,.08);
+
+padding:18px;
+
+border-radius:18px;
+
+margin-bottom:18px;
+
+border:1px solid rgba(255,255,255,.08);
+
+}
+
+.schedule-admin-title{
+
+font-size:20px;
+font-weight:900;
+
+margin-bottom:15px;
+
+color:#60a5fa;
+
+}
+
+.session-item{
+
+background:rgba(0,0,0,.25);
+
+padding:12px;
+
+border-radius:14px;
+
+margin-bottom:12px;
+
+}
+
+.session-grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:10px;
+
+margin-top:10px;
+
+}
+
+.btn-session{
+
+margin-top:10px;
+
+background:#2563eb;
+
+}
+/* POPUP JADWAL ADMIN */
+
+.jadwal-popup{
+
+max-width:700px;
+
+background:#0f172a;
+
+color:white;
+
+border:1px solid rgba(255,255,255,.08);
+
+}
+
+.jadwal-popup label{
+
+color:white;
+
+}
+
+.jadwal-popup input,
+.jadwal-popup select{
+
+background:rgba(255,255,255,.05);
+
+border:1px solid rgba(255,255,255,.08);
+
+color:white;
+
+}
+
+.jadwal-popup option{
+
+color:black;
+
+}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-top">
+        <div>
+            <h1>BMI TAEKWONDO ACADEMY</h1>
+            <p>Finance Management Dashboard</p>
+        </div>
+        <div class="clock-box">
+            <div id="clock-time">00:00:00</div>
+            <div id="clock-date">Loading...</div>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="btn btn-add" onclick="openAddModal()">+ Tambah Member</button>
+        <button class="btn btn-export" onclick="exportExcel()">Export Excel</button>
+    </div>
+</div>
+<div class="card">
+
+<h3>Jadwal Latihan</h3>
+
+<button
+class="btn btn-add"
+style="margin-top:15px;"
+onclick="toggleJadwalAdmin(true)">
+
+📅 Buka Jadwal
+
+</button>
+
+</div>
+
+<div
+class="modal"
+id="jadwalModal">
+
+<div class="modal-content jadwal-popup">
+
+<h2 style="margin-bottom:20px;">
+Jadwal Global
+</h2>
+
+<div id="jadwalAdmin"></div>
+
+<button
+class="btn btn-add"
+style="width:100%; margin-top:15px;"
+onclick="simpanJadwalGlobal()">
+
+💾 Simpan Jadwal
+
+</button>
+
+<button
+class="btn btn-delete"
+style="width:100%; margin-top:10px;"
+onclick="toggleJadwalAdmin(false)">
+
+Tutup
+
+</button>
+
+</div>
+
+</div>
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Cari nama siswa..." onkeyup="loadData()">
+</div>
+
+<div class="stats">
+    <div class="card"><h3>Total</h3><div class="num" id="totalMember">0</div></div>
+    <div class="card"><h3>Lunas</h3><div class="num" id="totalLunas">0</div></div>
+    <div class="card"><h3>Belum</h3><div class="num" id="totalBelum">0</div></div>
+    <div class="card"><h3>Pemasukan</h3><div class="num" id="pemasukan">Rp0</div></div>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Nama (Klik Riwayat)</th>
+                <th>Sabuk</th>
+                <th>No HP</th>
+                <th>Fisik</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+</div>
+
+<div class="modal" id="studentModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Tambah Member</h2>
+        <form id="studentForm">
+            <input type="hidden" id="student-id">
+            <label>Nama Lengkap</label><input type="text" id="form-nama" required>
+            <label>Username</label><input type="text" id="form-username" required>
+            <label>Password</label><input type="text" id="form-password" required>
+            <label>Nomor HP</label><input type="text" id="form-hp">
+            <label>Tanggal Lahir</label><input type="date" id="form-tgl">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1"><label>Berat (Kg)</label><input type="number" id="form-berat"></div>
+                <div style="flex:1"><label>Tinggi (Cm)</label><input type="number" id="form-tinggi"></div>
+            </div>
+            <label>Warna Sabuk</label>
+            <select id="form-sabuk">
+                <option>Putih</option><option>Kuning</option><option>Hijau</option>
+                <option>Biru</option><option>Merah</option><option>Hitam</option>
+            </select>
+            <label>Status Kewajiban Bulan Ini</label>
+            <select id="form-status">
+                <option value="Belum Lunas">Belum Lunas</option>
+                <option value="Lunas">Lunas</option>
+            </select>
+            <button type="submit" class="btn btn-add" style="width:100%; margin-top:20px;">Simpan Data</button>
+            <button type="button" class="btn btn-delete" style="width:100%; margin-top:10px;" onclick="closeModal()">Batal</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="historyModal">
+    <div class="modal-content">
+        <h2>Riwayat Pembayaran</h2>
+        <hr><br>
+        <div id="historyContent"></div>
+        <button class="btn btn-delete" style="width:100%; margin-top:20px;" onclick="closeHistory()">Tutup</button>
+    </div>
+</div>
+
+<div class="footer">
+    BMI Taekwondo Academy Management System © 2026
+</div>
+
+<script>
+// --- CONFIG FIREBASE ---
+const firebaseConfig = {
+    apiKey: "AIzaSyATIQKEoacfqd_P5mBn915gzwbsLQE-va8",
+    authDomain: "spp-unisri-taekwondo.firebaseapp.com",
+    projectId: "spp-unisri-taekwondo",
+    storageBucket: "spp-unisri-taekwondo.firebasestorage.app",
+    messagingSenderId: "888126318699",
+    appId: "1:888126318699:web:6e1ef3d5a49908c2b5692e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// --- JAM REALTIME ---
+setInterval(() => {
+    const now = new Date();
+    document.getElementById("clock-time").innerText = now.toLocaleTimeString("id-ID");
+    document.getElementById("clock-date").innerText = now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}, 1000);
+
+// --- LOAD DATA (DENGAN LOGIKA TOMBOL PERINGATAN BARU) ---
+function loadData() {
+    const cari = document.getElementById("searchInput").value.toLowerCase();
+    const bulanNow = new Date().toISOString().slice(0, 7); // Format: 2026-05
+
+    db.collection("siswa").onSnapshot(snapshot => {
+        let html = "";
+        let total = 0, lunas = 0, belum = 0;
+
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            if (!(d.nama || "").toLowerCase().includes(cari)) return;
+
+            total++;
+            
+            // 1. Cek Status Lunas
+            const isLunas = d.bulan_bayar === bulanNow;
+            isLunas ? lunas++ : belum++;
+
+            // 2. Logika Tampilan Tombol Peringatan
+            // Tombol muncul jika: Belum Lunas DAN (Belum pernah ditegur ATAU sudah dilihat member)
+            let tombolPeringatan = "";
+            if (!isLunas) {
+                const sedangDiperingatkan = d.peringatan === true;
+                const sudahDilihat = d.peringatan_dilihat === true;
+
+                if (!sedangDiperingatkan || sudahDilihat) {
+                    tombolPeringatan = `<button class="btn btn-caution" onclick="peringatkan('${doc.id}')">⚠️</button>`;
+                }
+            }
+
+            html += `
+            <tr>
+                <td onclick="lihatRiwayat('${doc.id}')" style="cursor:pointer; color:#60a5fa; font-weight:bold;">${d.nama || "-"}</td>
+                <td>${d.warna_sabuk || "-"}</td>
+                <td>${d.nomor_hp || "-"}</td>
+                <td>${d.berat_badan || 0}kg / ${d.tinggi_badan || 0}cm</td>
+                <td><span class="badge ${isLunas ? 'green' : 'red'}">${isLunas ? 'Lunas' : 'Belum'}</span></td>
+                <td>
+                    <button class="btn btn-pay" onclick="bayar('${doc.id}')" ${isLunas ? 'disabled style="opacity:0.5"' : ''}>Bayar</button>
+                    <button class="btn btn-edit" onclick="editData('${doc.id}')">Edit</button>
+                    <button class="btn btn-delete" onclick="hapus('${doc.id}')">Hapus</button>
+                    ${tombolPeringatan}
+                </td>
+            </tr>`;
+        });
+
+        document.getElementById("table-body").innerHTML = html;
+        document.getElementById("totalMember").innerText = total;
+        document.getElementById("totalLunas").innerText = lunas;
+        document.getElementById("totalBelum").innerText = belum;
+        document.getElementById("pemasukan").innerText = "Rp" + (lunas * 20000).toLocaleString("id-ID");
+    });
+}
+
+// --- FUNGSI PERINGATKAN (UPDATE) ---
+function peringatkan(id) {
+    if (confirm("Kirim peringatan ke member?")) {
+        db.collection("siswa").doc(id).update({ 
+            peringatan: true, 
+            peringatan_dilihat: false // Reset agar tombol sembunyi sampai member buka HP
+        });
+        alert("Peringatan dikirim! Tombol akan sembunyi sampai member melihat pesan ini.");
+    }
+}
+
+// --- FUNGSI BAYAR (UPDATE) ---
+function bayar(id) {
+    if (!confirm("Catat pembayaran bulan ini?")) return;
+    const bulanIni = new Date().toISOString().slice(0, 7);
+    const ref = db.collection("siswa").doc(id);
+
+    ref.get().then(doc => {
+        let riwayat = doc.data().riwayat_bayar || [];
+        if (!riwayat.includes(bulanIni)) riwayat.push(bulanIni);
+        
+        ref.update({ 
+            bulan_bayar: bulanIni, 
+            riwayat_bayar: riwayat, 
+            peringatan: false,           // Hapus status peringatan
+            peringatan_dilihat: false    // Reset status lihat
+        });
+    });
+}
+
+// --- FUNGSI LAINNYA (TIDAK BERUBAH) ---
+function openAddModal() {
+    document.getElementById("studentForm").reset();
+    document.getElementById("student-id").value = "";
+    document.getElementById("modalTitle").innerText = "Tambah Member";
+    document.getElementById("studentModal").style.display = "block";
+}
+
+function closeModal() { document.getElementById("studentModal").style.display = "none"; }
+
+document.getElementById("studentForm").onsubmit = function(e) {
+    e.preventDefault();
+    const id = document.getElementById("student-id").value;
+    const status = document.getElementById("form-status").value;
+    const bulanNow = new Date().toISOString().slice(0, 7);
+
+    let data = {
+        nama: document.getElementById("form-nama").value,
+        username: document.getElementById("form-username").value,
+        password: document.getElementById("form-password").value,
+        nomor_hp: document.getElementById("form-hp").value,
+        tanggal_lahir: document.getElementById("form-tgl").value,
+        berat_badan: document.getElementById("form-berat").value,
+        tinggi_badan: document.getElementById("form-tinggi").value,
+        warna_sabuk: document.getElementById("form-sabuk").value,
+        bulan_bayar: status === "Lunas" ? bulanNow : ""
+    };
+
+    if (id) {
+        db.collection("siswa").doc(id).update(data);
+    } else {
+        db.collection("siswa").add(data);
+    }
+    closeModal();
+};
+
+function editData(id) {
+    db.collection("siswa").doc(id).get().then(doc => {
+        const d = doc.data();
+        const bulanNow = new Date().toISOString().slice(0, 7);
+        document.getElementById("student-id").value = id;
+        document.getElementById("form-nama").value = d.nama || "";
+        document.getElementById("form-username").value = d.username || "";
+        document.getElementById("form-password").value = d.password || "";
+        document.getElementById("form-hp").value = d.nomor_hp || "";
+        document.getElementById("form-tgl").value = d.tanggal_lahir || "";
+        document.getElementById("form-berat").value = d.berat_badan || "";
+        document.getElementById("form-tinggi").value = d.tinggi_badan || "";
+        document.getElementById("form-sabuk").value = d.warna_sabuk || "Putih";
+        document.getElementById("form-status").value = d.bulan_bayar === bulanNow ? "Lunas" : "Belum Lunas";
+        document.getElementById("modalTitle").innerText = "Edit Member";
+        document.getElementById("studentModal").style.display = "block";
+    });
+}
+
+function hapus(id) {
+    if (confirm("Ingin Menendang Anak ini?")) db.collection("siswa").doc(id).delete();
+}
+
+function lihatRiwayat(id) {
+    db.collection("siswa").doc(id).get().then(doc => {
+        const riwayat = doc.data().riwayat_bayar || [];
+        let html = riwayat.length ? "" : "<p>Belum ada riwayat.</p>";
+        riwayat.sort().reverse().forEach(b => {
+            html += `<div style="padding:10px; margin:5px 0; background:#f3f4f6; border-radius:8px; color:#111;">✅ Bulan: ${b}</div>`;
+        });
+        document.getElementById("historyContent").innerHTML = html;
+        document.getElementById("historyModal").style.display = "block";
+    });
+}
+
+function closeHistory() { document.getElementById("historyModal").style.display = "none"; }
+
+function exportExcel(){
+    db.collection("siswa").get().then(snapshot=>{
+        const bulanNow = new Date().toISOString().slice(0,7);
+        let rows = [["BMI TAEKWONDO ACADEMY"], ["Management Member System"], [], ["NO","NAMA","USERNAME","PASSWORD","NO HP","TANGGAL LAHIR","BERAT","TINGGI","SABUK","STATUS","RIWAYAT"]];
+        let no = 1;
+        snapshot.forEach(doc=>{
+            const d = doc.data();
+            const status = d.bulan_bayar === bulanNow ? "LUNAS" : "BELUM";
+            rows.push([no++, d.nama || "-", d.username || "-", d.password || "-", d.nomor_hp || "-", d.tanggal_lahir || "-", (d.berat_badan || 0), (d.tinggi_badan || 0), d.warna_sabuk || "-", status, (d.riwayat_bayar || []).join(", ")]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "DATA MEMBER BMI");
+        XLSX.writeFile(wb, "DATA_MEMBER_BMI.xlsx");
+    });
+}
+
+function toggleJadwalAdmin(show){
+    document.getElementById("jadwalModal").style.display = show ? "block" : "none";
+}
+
+loadData();
+
+// --- JADWAL SYSTEM ---
+const hariList = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
+
+function renderAdminJadwal(data = {}){
+    let html = "";
+    hariList.forEach(hari=>{
+        html += `<div class="schedule-admin-card"><div class="schedule-admin-title">${hari.toUpperCase()}</div><div id="wrap-${hari}"></div><button class="btn btn-session" onclick="tambahSession('${hari}')">+ Tambah Session</button></div>`;
+    });
+    document.getElementById("jadwalAdmin").innerHTML = html;
+    hariList.forEach(hari=>{
+        const sessions = data[hari] || [];
+        if(sessions.length === 0) { tambahSession(hari); }
+        else { sessions.forEach(s=> tambahSession(hari, s.jam, s.type)); }
+    });
+}
+
+function tambahSession(hari, jam="", type="pagi"){
+    const id = Date.now() + Math.random();
+    const html = `<div class="session-item" id="${id}"><div class="session-grid"><div><label>Jam</label><input type="time" class="jam-input" value="${jam}"></div><div><label>Type</label><select class="type-input"><option value="pagi" ${type==="pagi"?"selected":""}>Pagi</option><option value="siang" ${type==="siang"?"selected":""}>Siang</option><option value="sore" ${type==="sore"?"selected":""}>Sore</option><option value="malam" ${type==="malam"?"selected":""}>Malam</option></select></div></div><button class="btn btn-delete" style="margin-top:10px;" onclick="document.getElementById('${id}').remove()">Hapus</button></div>`;
+    document.getElementById(`wrap-${hari}`).insertAdjacentHTML("beforeend", html);
+}
+
+function simpanJadwalGlobal(){
+    const result = {};
+    hariList.forEach(hari=>{
+        const wrap = document.getElementById(`wrap-${hari}`);
+        const items = wrap.querySelectorAll(".session-item");
+        result[hari] = [];
+        items.forEach(item=>{
+            const jam = item.querySelector(".jam-input").value;
+            const type = item.querySelector(".type-input").value;
+            if(jam) result[hari].push({jam, type});
+        });
+    });
+    db.collection("jadwal").doc("global").set(result).then(()=> alert("🔥 Jadwal tersimpan!"));
+}
+
+db.collection("jadwal").doc("global").onSnapshot(doc=>{
+    if(doc.exists) renderAdminJadwal(doc.data());
+    else renderAdminJadwal();
+});
+
+</script>
+
+</body>
+</html>
