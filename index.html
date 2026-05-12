@@ -317,11 +317,15 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 function getMingguKey() {
     const now = new Date();
-    const firstDay = new Date(now.getFullYear(), 0, 1);
-    const days = Math.floor((now - firstDay) / (24 * 60 * 60 * 1000));
-    const week = Math.ceil((days + firstDay.getDay() + 1) / 7);
 
-    return `${now.getFullYear()}-Minggu-${week}`;
+    const tahun = now.getFullYear();
+    const bulan = now.getMonth() + 1;
+
+    const tanggal = now.getDate();
+
+    const mingguKe = Math.ceil(tanggal / 7);
+
+    return `${tahun}-${bulan}-Minggu-${mingguKe}`;
 }
 function getCurrentWeekNumber() {
     const now = new Date();
@@ -363,8 +367,10 @@ const mingguSekarang = getCurrentWeekNumber();
 let mingguBayar = 0;
 
 if (d.minggu_bayar) {
-    const pecah = d.minggu_bayar.split("-Minggu-");
-    mingguBayar = parseInt(pecah[1]) || 0;
+
+    const dataBayar = d.minggu_bayar.split("-");
+
+    mingguBayar = parseInt(dataBayar[3]) || 0;
 }
 
 const belumBayarMingguIni = mingguBayar < mingguSekarang;
@@ -423,7 +429,34 @@ function bayar(id) {
 
     ref.get().then(doc => {
         let riwayat = doc.data().riwayat_kas || [];
-        if (!riwayat.includes(mingguIni)) riwayat.push(mingguIni);
+
+const now = new Date();
+
+const namaHari = now.toLocaleDateString("id-ID", {
+    weekday: "long"
+});
+
+const tanggalLengkap = now.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+});
+
+const mingguKe = Math.ceil(now.getDate() / 7);
+
+const namaMinggu = [
+    "",
+    "Pertama",
+    "Kedua",
+    "Ketiga",
+    "Keempat",
+    "Kelima"
+];
+
+const textRiwayat =
+`Minggu ${namaMinggu[mingguKe]} • ${namaHari}, ${tanggalLengkap}`;
+
+riwayat.push(textRiwayat);
         
         ref.update({ 
             minggu_bayar: mingguIni, 
@@ -498,8 +531,19 @@ function lihatRiwayat(id) {
         const riwayat = doc.data().riwayat_kas || [];
         let html = riwayat.length ? "" : "<p>Belum ada riwayat.</p>";
         riwayat.sort().reverse().forEach(b => {
-           html += `<div style="padding:10px; margin:5px 0; background:#f3f4f6; border-radius:8px; color:#111;">✅ Kas Mingguan: ${b}</div>`;
-        });
+
+    html += `
+    <div style="
+    padding:10px;
+    margin:5px 0;
+    background:#f3f4f6;
+    border-radius:8px;
+    color:#111;
+    font-weight:bold;
+    ">
+    ✅ ${b}
+    </div>`;
+});
         document.getElementById("historyContent").innerHTML = html;
         document.getElementById("historyModal").style.display = "block";
     });
