@@ -29,6 +29,92 @@
             margin-bottom: 20px;
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .brand-wrap{
+
+    display:flex;
+    align-items:center;
+    gap:16px;
+
+}
+
+.logo-box{
+
+    width:75px;
+    height:75px;
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+    background:
+    rgba(255,255,255,.08);
+
+    padding:6px;
+
+    box-shadow:
+    0 6px 18px rgba(0,0,0,.25);
+
+    flex-shrink:0;
+}
+
+.logo-box img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    border-radius:18px;
+}
+
+.brand-text h1{
+
+    font-size:clamp(20px,4vw,34px);
+
+    font-weight:900;
+
+    letter-spacing:1px;
+
+    line-height:1.1;
+}
+
+.brand-text p{
+
+    margin-top:6px;
+
+    font-size:14px;
+
+    opacity:.8;
+
+    color:#cbd5e1;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+.brand-wrap{
+
+    width:100%;
+}
+
+.logo-box{
+
+    width:60px;
+    height:60px;
+}
+
+.brand-text h1{
+
+    font-size:22px;
+}
+
+.brand-text p{
+
+    font-size:13px;
+}
+
+}
         
         .clock-box {
             background: #000; color: #39ff14; padding: 10px 20px;
@@ -37,6 +123,68 @@
         }
 
         .actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+       .actions{
+    margin-top:20px;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(170px,1fr));
+
+    gap:14px;
+
+    width:100%;
+}
+
+.actions .btn{
+
+    width:100%;
+
+    min-height:65px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+
+    border-radius:18px;
+
+    font-size:15px;
+    font-weight:800;
+
+    padding:16px;
+
+    box-shadow:
+    0 6px 18px rgba(0,0,0,.20);
+
+    transition:.25s;
+}
+
+.actions .btn:hover{
+    transform:translateY(-2px);
+}
+
+/* HEADER RESPONSIVE */
+
+@media(max-width:700px){
+
+.header-top{
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.clock-box{
+    width:100%;
+}
+
+.actions{
+    flex-direction:column;
+}
+
+.actions .btn{
+    width:100%;
+}
+}
         
         /* BUTTONS */
         .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #fff; transition: .2s; font-size: 13px; }
@@ -165,25 +313,307 @@ color:white;
 color:black;
 
 }
+/* =========================
+SUPER STOPWATCH
+========================= */
+
+.super-stopwatch{
+
+background:rgba(255,255,255,.05);
+
+border-radius:30px;
+
+padding:25px;
+
+border:1px solid rgba(255,255,255,.08);
+
+backdrop-filter:blur(20px);
+
+}
+
+.sw-title{
+
+text-align:center;
+
+font-size:24px;
+
+font-weight:900;
+
+margin-bottom:25px;
+
+color:#22c55e;
+
+letter-spacing:2px;
+
+}
+
+.stopwatch-ring{
+  display:flex;
+flex-direction:column;
+align-items:center;
+overflow:hidden;
+background:radial-gradient(circle,#111827,#020617);
+
+padding:30px;
+
+border-radius:30px;
+
+box-shadow:
+0 0 40px rgba(34,197,94,.3),
+inset 0 0 30px rgba(255,255,255,.05);
+
+}
+
+.sw-display{
+
+font-size:clamp(38px, 9vw, 58px);
+
+width:100%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+text-align:center;
+
+font-family:monospace;
+
+font-weight:900;
+
+letter-spacing:2px;
+
+line-height:1;
+
+padding:10px 0;
+
+color:#22c55e;
+
+text-shadow:
+0 0 10px #22c55e,
+0 0 20px #22c55e,
+0 0 40px #22c55e;
+
+animation:pulse 1s infinite alternate;
+
+overflow:visible;
+
+}
+
+@keyframes pulse{
+
+from{
+transform:scale(1);
+}
+
+to{
+transform:scale(1.03);
+}
+
+}
+
+.sw-progress{
+
+width:100%;
+
+height:10px;
+
+background:rgba(255,255,255,.08);
+
+border-radius:999px;
+
+overflow:hidden;
+
+margin-top:25px;
+
+}
+
+#progressBar{
+
+width:0%;
+
+height:100%;
+
+background:linear-gradient(90deg,#22c55e,#3b82f6);
+
+transition:.1s;
+
+}
+
+.sw-buttons{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:12px;
+
+margin-top:20px;
+
+}
+
+.sw-btn{
+
+border:none;
+
+padding:15px;
+
+border-radius:18px;
+
+font-weight:900;
+
+font-size:15px;
+
+cursor:pointer;
+
+transition:.2s;
+
+color:white;
+
+}
+
+.sw-btn:hover{
+
+transform:translateY(-3px) scale(1.03);
+
+}
+
+.start{
+background:#22c55e;
+}
+
+.pause{
+background:#f59e0b;
+}
+
+.reset{
+background:#ef4444;
+}
+
+.lap{
+background:#3b82f6;
+}
+
+.round-box{
+
+display:flex;
+
+justify-content:space-between;
+
+margin-top:25px;
+
+gap:10px;
+
+}
+
+.round-box div{
+
+flex:1;
+
+background:rgba(255,255,255,.05);
+
+padding:15px;
+
+border-radius:20px;
+
+text-align:center;
+
+}
+
+.round-box h2{
+
+margin-top:8px;
+
+font-size:28px;
+
+}
+
+.lap-container{
+
+margin-top:20px;
+
+max-height:200px;
+
+overflow-y:auto;
+
+}
+
+.lap-item{
+
+background:rgba(255,255,255,.05);
+
+padding:12px;
+
+border-radius:14px;
+
+margin-bottom:10px;
+
+display:flex;
+
+justify-content:space-between;
+
+font-weight:bold;
+
+}
     </style>
 </head>
 <body>
+<div class="header-top">
 
-<div class="header">
-    <div class="header-top">
-        <div>
+    <div class="brand-wrap">
+
+        <div class="logo-box">
+
+            <img
+            src="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png"
+            alt="BMI Logo">
+
+        </div>
+
+        <div class="brand-text">
+
             <h1>BMI TAEKWONDO ACADEMY</h1>
-            <p>Finance Management Dashboard</p>
+
+            <p>admin paling asik sedunia 😎</p>
+
         </div>
-        <div class="clock-box">
-            <div id="clock-time">00:00:00</div>
-            <div id="clock-date">Loading...</div>
-        </div>
+
     </div>
-    <div class="actions">
-        <button class="btn btn-add" onclick="openAddModal()">+ Tambah Member</button>
-        <button class="btn btn-export" onclick="exportExcel()">Export Excel</button>
+
+    <div class="clock-box">
+        <div id="clock-time">00:00:00</div>
+        <div id="clock-date">Loading...</div>
     </div>
+
+</div>
+<div class="actions">
+
+<button
+class="btn btn-export"
+onclick="toggleAbsensiPopup(true)">
+✅ Buka Absensi
+</button>
+
+<button
+class="btn btn-export"
+onclick="exportExcel()">
+📄 Export Excel
+</button>
+
+<button
+class="btn"
+style="background:#f59e0b;"
+onclick="toggleBMIApp(true)">
+Stopwatch
+</button>
+
+<button
+class="btn btn-add"
+onclick="openAddModal()">
+➕ Tambah Member
+</button>
+
 </div>
 <div class="card">
 
@@ -230,6 +660,235 @@ Tutup
 
 </button>
 
+</div>
+
+</div>
+
+<!-- POPUP ABSENSI -->
+<div
+class="modal"
+id="absensiModal">
+
+<div class="modal-content jadwal-popup">
+
+<h2 style="margin-bottom:20px;">
+✅ System Absensi Kehadiran
+</h2>
+
+<div class="card"
+style="background:rgba(255,255,255,0.05);
+margin-bottom:15px;
+text-align:left;">
+
+<p>📅 Tanggal:
+<b id="absensi-tanggal">-</b></p>
+
+<p>👥 Total Hadir:
+<b id="total-hadir">0</b> Siswa</p>
+
+</div>
+
+<div
+id="absensi-list"
+style="
+max-height:350px;
+overflow-y:auto;
+margin-bottom:20px;
+">
+</div>
+
+<h2
+style="
+margin-bottom:15px;
+color:#f59e0b;
+">
+
+🏆 Top 3 Kehadiran
+
+</h2>
+
+<div
+id="ranking-kehadiran"
+style="
+background:rgba(255,255,255,0.05);
+border-radius:15px;
+padding:10px;
+">
+</div>
+<h2
+style="
+margin-top:20px;
+margin-bottom:15px;
+color:#ef4444;
+">
+
+❌ Tidak Hadir Hari Ini
+
+</h2>
+
+<div
+id="tidak-hadir-list"
+style="
+background:rgba(255,255,255,0.05);
+border-radius:15px;
+padding:10px;
+max-height:250px;
+overflow-y:auto;
+">
+Belum ada data
+</div>
+<button
+class="btn btn-delete"
+style="width:100%; margin-top:15px;"
+onclick="toggleAbsensiPopup(false)">
+
+Tutup
+
+</button>
+
+</div>
+
+</div>
+<!-- BMI APP POPUP -->
+<div
+class="modal"
+id="bmiAppModal">
+
+<div
+class="modal-content jadwal-popup">
+
+<h2
+style="
+margin-bottom:20px;
+color:#f59e0b;
+">
+
+Stopwatch
+
+</h2>
+
+<!-- SUPER STOPWATCH -->
+
+<div class="super-stopwatch">
+
+<h3 class="sw-title">
+🥋 BMI TRAINING TIMER
+</h3>
+
+<div class="stopwatch-ring">
+
+<div id="stopwatchDisplay" class="sw-display">
+00:00:00
+</div>
+
+<div class="sw-progress">
+<div id="progressBar"></div>
+</div>
+
+</div>
+
+<div class="sw-buttons">
+
+<button
+class="sw-btn start"
+onclick="startStopwatch()">
+
+▶ START
+
+</button>
+
+<button
+class="sw-btn pause"
+onclick="pauseStopwatch()">
+
+⏸ PAUSE
+
+</button>
+
+<button
+class="sw-btn reset"
+onclick="resetStopwatch()">
+
+⏹ RESET
+
+</button>
+
+<button
+class="sw-btn lap"
+onclick="saveLap()">
+
+🏆 LAP
+
+</button>
+
+</div>
+
+<div class="round-box">
+
+<div>
+🥊 ROUND
+<h2 id="roundText">1</h2>
+</div>
+
+<div>
+⏱ TARGET
+
+<input
+type="number"
+id="targetMinute"
+value="2"
+min="1"
+
+style="
+width:100%;
+margin-top:10px;
+padding:10px;
+border:none;
+border-radius:12px;
+font-size:22px;
+font-weight:900;
+text-align:center;
+background:rgba(255,255,255,.08);
+color:white;
+">
+
+<p style="
+margin-top:6px;
+font-size:12px;
+opacity:.7;
+">
+
+Menit
+
+</p>
+
+</div>
+</div>
+
+<div id="lapContainer" class="lap-container">
+
+<p style="opacity:.6">
+Belum ada lap
+</p>
+</div>
+</div>
+<div style="margin-top:20px;">
+
+<button
+class="sw-btn reset"
+style="
+width:100%;
+padding:18px;
+font-size:16px;
+border-radius:20px;
+"
+
+onclick="toggleBMIApp(false)">
+
+❌ TUTIP  STOPWATCH
+</button>
+
+</div>
 </div>
 
 </div>
@@ -570,8 +1229,19 @@ function exportExcel(){
 }
 
 function toggleJadwalAdmin(show){
-    document.getElementById("jadwalModal").style.display = show ? "block" : "none";
+    document.getElementById("jadwalModal").style.display =
+    show ? "block" : "none";
 }
+
+function toggleAbsensiPopup(show){
+    document.getElementById("absensiModal").style.display =
+    show ? "block" : "none";
+
+    if(show){
+        loadAbsensi();
+    }
+}
+
 
 loadData();
 
@@ -616,7 +1286,425 @@ db.collection("jadwal").doc("global").onSnapshot(doc=>{
     if(doc.exists) renderAdminJadwal(doc.data());
     else renderAdminJadwal();
 });
+async function loadAbsensi() {
 
+    const today = getTodayKey();
+
+    const listContainer =
+    document.getElementById("absensi-list");
+
+    const tidakHadirContainer =
+    document.getElementById("tidak-hadir-list");
+
+    listContainer.innerHTML =
+    "<p style='color:gray;'>Memuat daftar siswa...</p>";
+
+    document.getElementById("absensi-tanggal").innerText =
+    new Date().toLocaleDateString("id-ID");
+
+    try {
+
+        // Ambil semua siswa
+        const siswaSnapshot =
+        await db.collection("siswa").get();
+
+        // Ambil absensi hari ini
+        const absenDoc =
+        await db.collection("absensi")
+        .doc(today)
+        .get();
+
+        const absenData =
+        absenDoc.exists
+        ? (absenDoc.data().hadir || [])
+        : [];
+
+        let html = "";
+
+        let tidakHadirHTML = "";
+
+        let countHadir = 0;
+
+        siswaSnapshot.forEach(doc => {
+
+            const s = doc.data();
+
+            const idSiswa = doc.id;
+
+            const isChecked =
+            absenData.includes(idSiswa);
+
+            // HITUNG HADIR
+            if(isChecked){
+                countHadir++;
+            }else{
+
+                // MASUKKAN KE LIST TIDAK HADIR
+                tidakHadirHTML += `
+                <div style="
+                padding:10px;
+                margin-bottom:8px;
+                background:rgba(239,68,68,0.15);
+                border-radius:10px;
+                border:1px solid rgba(239,68,68,0.2);
+                color:white;
+                font-weight:bold;
+                ">
+                    ❌ ${s.nama || 'Tanpa Nama'}
+                </div>`;
+            }
+
+            // LIST ABSENSI
+            html += `
+            <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:12px;
+            border-bottom:1px solid rgba(255,255,255,0.1);
+            background:rgba(255,255,255,0.02);
+            margin-bottom:5px;
+            border-radius:8px;
+            ">
+
+                <span style="
+                font-size:14px;
+                color:white;
+                ">
+                    ${s.nama || 'Tanpa Nama'}
+                </span>
+
+                <input
+                type="checkbox"
+
+                style="
+                width:22px;
+                height:22px;
+                cursor:pointer;
+                "
+
+                ${isChecked ? 'checked' : ''}
+
+                onchange="toggleAbsen('${idSiswa}', this.checked)">
+            </div>`;
+        });
+
+        // TAMPILKAN LIST ABSENSI
+        listContainer.innerHTML = html;
+
+        // TOTAL HADIR
+        document.getElementById("total-hadir").innerText =
+        countHadir;
+
+        // TAMPILKAN TIDAK HADIR
+        tidakHadirContainer.innerHTML =
+        tidakHadirHTML ||
+
+        `<div style="
+        padding:10px;
+        background:rgba(34,197,94,0.15);
+        border-radius:10px;
+        color:white;
+        font-weight:bold;
+        ">
+            ✅ Semua siswa hadir hari ini
+        </div>`;
+
+        // UPDATE RANKING
+        updateRanking();
+
+    } catch(error){
+
+        console.error(error);
+
+        listContainer.innerHTML =
+        "<p style='color:red;'>Gagal memuat data.</p>";
+    }
+}
+// --- LOGIKA PENDUKUNG ABSENSI ---
+
+function getTodayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function getMonthKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth() + 1}`;
+}
+
+// Fungsi Simpan Ceklis
+async function toggleAbsen(siswaId, isChecked) {
+    const today = getTodayKey();
+    const ref = db.collection("absensi").doc(today);
+
+    try {
+        if (isChecked) {
+            await ref.set({
+                hadir: firebase.firestore.FieldValue.arrayUnion(siswaId)
+            }, { merge: true });
+        } else {
+            await ref.update({
+                hadir: firebase.firestore.FieldValue.arrayRemove(siswaId)
+            });
+        }
+        // Refresh data setelah update
+        const updatedDoc = await ref.get();
+        const count = updatedDoc.exists ? (updatedDoc.data().hadir || []).length : 0;
+        document.getElementById("total-hadir").innerText = countHadir;
+
+document.getElementById("tidak-hadir-list").innerHTML =
+tidakHadirHTML || `
+<div style="
+padding:10px;
+background:rgba(34,197,94,0.15);
+border-radius:10px;
+">
+✅ Semua siswa hadir hari ini
+</div>
+`;
+
+updateRanking();
+    } catch (e) {
+        console.error("Gagal simpan absensi:", e);
+    }
+}
+
+// Fungsi Hitung Ranking Bulanan
+async function updateRanking() {
+    const month = getMonthKey();
+    const snapshot = await db.collection("absensi").get();
+    const stats = {};
+
+    snapshot.forEach(doc => {
+        if (doc.id.startsWith(month)) {
+            const hadir = doc.data().hadir || [];
+            hadir.forEach(id => {
+                stats[id] = (stats[id] || 0) + 1;
+            });
+        }
+    });
+
+    const siswaSnap = await db.collection("siswa").get();
+    const rankData = [];
+    siswaSnap.forEach(doc => {
+        if (stats[doc.id]) {
+            rankData.push({ nama: doc.data().nama, count: stats[doc.id] });
+        }
+    });
+
+    rankData.sort((a, b) => b.count - a.count);
+    const top3 = rankData.slice(0, 3);
+
+    let html = "";
+    top3.forEach((r, i) => {
+        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+        html += `<div style="padding:5px; border-bottom:1px solid rgba(255,255,255,0.05)">${medal} ${r.nama} (${r.count}x)</div>`;
+    });
+    document.getElementById("ranking-kehadiran").innerHTML = html || "Belum ada data bulan ini";
+}
+// =========================
+// BMI APP POPUP
+// =========================
+
+function toggleBMIApp(show){
+
+    document.getElementById("bmiAppModal").style.display =
+    show ? "block" : "none";
+}
+
+// =========================
+// SUPER STOPWATCH SYSTEM
+// =========================
+
+let stopwatchInterval;
+
+let elapsed = 0;
+
+let running = false;
+
+let lapCount = 1;
+
+let round = 1;
+
+let targetTime = 120000;
+
+// =========================
+// FORMAT TIME
+// =========================
+
+function formatTime(ms){
+
+const minutes =
+Math.floor(ms / 60000);
+
+const seconds =
+Math.floor((ms % 60000) / 1000);
+
+const centiseconds =
+Math.floor((ms % 1000) / 10);
+
+return `${String(minutes).padStart(2,'0')}:` +
+`${String(seconds).padStart(2,'0')}.` +
+`${String(centiseconds).padStart(2,'0')}`;
+}
+
+// =========================
+// UPDATE DISPLAY
+// =========================
+
+function updateDisplay(){
+
+document.getElementById("stopwatchDisplay").innerText =
+formatTime(elapsed);
+
+const percent =
+Math.min((elapsed / targetTime) * 100,100);
+
+document.getElementById("progressBar").style.width =
+percent + "%";
+
+// AUTO NEXT ROUND
+
+if(elapsed >= targetTime){
+
+playBeep();
+
+navigator.vibrate?.([300,100,300]);
+
+round++;
+
+document.getElementById("roundText").innerText =
+round;
+
+elapsed = 0;
+}
+}
+
+// =========================
+// START
+// =========================
+
+function startStopwatch(){
+
+if(running) return;
+const menit =
+parseInt(
+document.getElementById("targetMinute").value
+) || 1;
+
+targetTime = menit * 60000;
+running = true;
+
+navigator.vibrate?.(100);
+
+const start =
+Date.now() - elapsed;
+
+stopwatchInterval = setInterval(()=>{
+
+elapsed = Date.now() - start;
+
+updateDisplay();
+
+},10);
+}
+
+// =========================
+// PAUSE
+// =========================
+
+function pauseStopwatch(){
+
+running = false;
+
+clearInterval(stopwatchInterval);
+
+navigator.vibrate?.([100,50,100]);
+}
+
+// =========================
+// RESET
+// =========================
+
+function resetStopwatch(){
+
+running = false;
+
+clearInterval(stopwatchInterval);
+
+elapsed = 0;
+
+lapCount = 1;
+
+round = 1;
+
+document.getElementById("roundText").innerText =
+"1";
+
+document.getElementById("progressBar").style.width =
+"0%";
+
+document.getElementById("lapContainer").innerHTML =
+"<p style='opacity:.6'>Belum ada lap</p>";
+
+document.getElementById("stopwatchDisplay").innerText =
+"00:00:00";
+
+navigator.vibrate?.([200,100,200]);
+}
+
+// =========================
+// SAVE LAP
+// =========================
+
+function saveLap(){
+
+const lap =
+document.createElement("div");
+
+lap.className = "lap-item";
+
+lap.innerHTML = `
+<span>🏆 LAP ${lapCount}</span>
+<span>${formatTime(elapsed)}</span>
+`;
+
+document.getElementById("lapContainer")
+.prepend(lap);
+
+lapCount++;
+
+navigator.vibrate?.(50);
+}
+
+// =========================
+// SOUND
+// =========================
+
+function playBeep(){
+
+const ctx =
+new(window.AudioContext ||
+window.webkitAudioContext)();
+
+const osc =
+ctx.createOscillator();
+
+osc.type = "sine";
+
+osc.frequency.value = 800;
+
+osc.connect(ctx.destination);
+
+osc.start();
+
+setTimeout(()=>{
+
+osc.stop();
+
+},300);
+}
 </script>
 
 </body>
