@@ -1528,7 +1528,7 @@ let lapCount = 1;
 let round = 1;
 
 let targetTime = 120000;
-
+let nextRoundTarget = 120000;
 // =========================
 // FORMAT TIME
 // =========================
@@ -1558,15 +1558,21 @@ function updateDisplay(){
 document.getElementById("stopwatchDisplay").innerText =
 formatTime(elapsed);
 
+// PROGRESS BAR PER ROUND
+const currentRoundTime =
+elapsed % targetTime;
+
 const percent =
-Math.min((elapsed / targetTime) * 100,100);
+Math.min(
+(currentRoundTime / targetTime) * 100,
+100
+);
 
 document.getElementById("progressBar").style.width =
 percent + "%";
 
-// AUTO NEXT ROUND
-
-if(elapsed >= targetTime){
+// NAIK ROUND HANYA SEKALI
+if(elapsed >= nextRoundTarget){
 
 playBeep();
 
@@ -1577,7 +1583,9 @@ round++;
 document.getElementById("roundText").innerText =
 round;
 
-elapsed = 0;
+// TARGET ROUND BERIKUTNYA
+nextRoundTarget =
+round * targetTime;
 }
 }
 
@@ -1588,12 +1596,18 @@ elapsed = 0;
 function startStopwatch(){
 
 if(running) return;
+
 const menit =
 parseInt(
 document.getElementById("targetMinute").value
 ) || 1;
 
 targetTime = menit * 60000;
+
+// TARGET PERTAMA
+nextRoundTarget =
+(round * targetTime);
+
 running = true;
 
 navigator.vibrate?.(100);
@@ -1609,7 +1623,6 @@ updateDisplay();
 
 },10);
 }
-
 // =========================
 // PAUSE
 // =========================
@@ -1638,6 +1651,7 @@ elapsed = 0;
 lapCount = 1;
 
 round = 1;
+nextRoundTarget = targetTime;
 
 document.getElementById("roundText").innerText =
 "1";
