@@ -138,30 +138,224 @@
 
 .actions .btn{
 
-    width:100%;
+    position:relative;
 
-    min-height:65px;
+    overflow:hidden;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
+    border:none;
 
-    border-radius:18px;
+    min-height:68px;
+
+    border-radius:24px;
 
     font-size:15px;
-    font-weight:800;
 
-    padding:16px;
+    font-weight:900;
+
+    letter-spacing:.8px;
+
+    color:white;
+
+    text-shadow:
+
+    0 1px 0 rgba(255,255,255,.20),
+
+    0 2px 0 rgba(0,0,0,.15),
+
+    0 4px 8px rgba(0,0,0,.35);
+
+    background:
+    linear-gradient(
+    180deg,
+    rgba(255,255,255,.22) 0%,
+    rgba(255,255,255,.08) 35%,
+    rgba(0,0,0,.12) 100%
+    );
+
+    backdrop-filter:blur(12px);
+
+    border:
+    1px solid rgba(255,255,255,.15);
 
     box-shadow:
-    0 6px 18px rgba(0,0,0,.20);
 
-    transition:.25s;
+    inset 0 2px 4px rgba(255,255,255,.18),
+
+    inset 0 -4px 8px rgba(0,0,0,.18),
+
+    0 10px 20px rgba(0,0,0,.28),
+
+    0 2px 5px rgba(255,255,255,.08);
+
+    transition:
+    transform .2s,
+    box-shadow .2s;
 }
+.actions .btn::after{
 
+    content:"";
+
+    position:absolute;
+
+    top:4px;
+    left:6%;
+
+    width:88%;
+    height:45%;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+    to bottom,
+    rgba(255,255,255,.35),
+    rgba(255,255,255,0)
+    );
+
+    pointer-events:none;
+}
+.actions .btn:hover{
+
+    transform:
+    translateY(-3px)
+    scale(1.02);
+
+    box-shadow:
+
+    inset 0 2px 4px rgba(255,255,255,.18),
+
+    inset 0 -4px 8px rgba(0,0,0,.18),
+
+    0 14px 28px rgba(0,0,0,.35),
+
+    0 4px 10px rgba(255,255,255,.08);
+}
 .actions .btn:hover{
     transform:translateY(-2px);
+}
+
+.actions .btn{
+text-shadow:
+
+0 1px 0 rgba(255,255,255,.20),
+
+0 2px 0 rgba(0,0,0,.15),
+
+0 3px 6px rgba(0,0,0,.35),
+
+0 0 10px rgba(255,255,255,.12);
+letter-spacing:.8px;position:relative;
+
+    overflow:hidden;
+
+    border:none;
+
+    min-height:68px;
+
+    border-radius:22px;
+
+    font-size:15px;
+
+    font-weight:900;
+
+    letter-spacing:.5px;
+
+    color:white;
+
+    backdrop-filter:blur(12px);
+
+    background:
+    linear-gradient(
+    135deg,
+    rgba(255,255,255,.18),
+    rgba(255,255,255,.05)
+    );
+
+    border:
+    1px solid rgba(255,255,255,.12);
+
+    box-shadow:
+    0 8px 24px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.08);
+
+    transition:
+    transform .25s,
+    box-shadow .25s,
+    background .25s;
+}
+
+/* EFEK CAHAYA */
+
+.actions .btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-120%;
+
+    width:80%;
+    height:100%;
+
+    background:
+    linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.25),
+    transparent
+    );
+
+    transform:skewX(-25deg);
+
+    transition:.7s;
+}
+.actions .bmi-btn{
+
+    background:
+    linear-gradient(
+    135deg,
+    #f59e0b,
+    #ea580c
+    );
+}
+.actions .btn:hover::before{
+
+    left:130%;
+}
+
+/* HOVER */
+
+.actions .btn:hover{
+
+    transform:
+    translateY(-4px)
+    scale(1.02);
+
+    box-shadow:
+    0 12px 28px rgba(0,0,0,.35);
+}
+
+/* WARNA KHUSUS */
+
+.actions .btn-export{
+
+    background:
+    linear-gradient(
+    135deg,
+    #7c3aed,
+    #4f46e5
+    );
+}
+
+.actions .btn-add{
+
+    background:
+    linear-gradient(
+    135deg,
+    #16a34a,
+    #22c55e
+    );
 }
 
 /* HEADER RESPONSIVE */
@@ -198,9 +392,283 @@
 
         /* SEARCH & STATS */
         .search-box input { width: 100%; padding: 12px; border-radius: 12px; border: none; margin: 15px 0; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .card { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; text-align: center; }
+       .stats {
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(150px,1fr));
+
+    gap:14px;
+
+    margin-top:10px;
+
+    margin-bottom:20px;
+}
+       .card{
+         margin-top:15px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:18px;
+
+    border-radius:24px;
+
+    text-align:center;
+
+    backdrop-filter:blur(14px);
+
+    background:
+    linear-gradient(
+    145deg,
+    rgba(255,255,255,.10),
+    rgba(255,255,255,.03)
+    );
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,.30),
+
+    inset 0 1px 0 rgba(255,255,255,.08);
+
+    transition:.35s;
+}
+
+/* MATAHARI JEPANG */
+
+.card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:140px;
+    height:140px;
+
+    border-radius:50%;
+
+    background:
+    radial-gradient(
+    circle,
+    rgba(239,68,68,.28),
+    transparent 70%
+    );
+
+    top:-40px;
+    right:-40px;
+}
+
+/* GARIS JEPANG */
+
+.card::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 14px,
+    rgba(255,255,255,.025) 15px
+    );
+
+    pointer-events:none;
+}
+
+/* HOVER */
+
+.card:hover{
+
+    transform:
+    translateY(-5px)
+    scale(1.02);
+
+    box-shadow:
+
+    0 16px 30px rgba(0,0,0,.35),
+
+    0 0 20px rgba(239,68,68,.15);
+}
         .card .num { font-size: 24px; font-weight: 800; margin-top: 5px; }
+        /* CARD STATS */
+
+.stats .card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    backdrop-filter:blur(12px);
+
+    background:
+    linear-gradient(
+    145deg,
+    rgba(255,255,255,.12),
+    rgba(255,255,255,.04)
+    );
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.25);
+
+    transition:.3s;
+}
+
+.stats .card:hover{
+
+    transform:
+    translateY(-4px)
+    scale(1.02);
+}
+
+/* JUDUL */
+
+.stats .card h3{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    letter-spacing:2px;
+
+    color:#f8fafc;
+
+    text-transform:uppercase;
+
+    text-shadow:
+    0 2px 8px rgba(0,0,0,.4);
+}
+
+.card .num{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:32px;
+
+    font-weight:1000;
+
+    margin-top:10px;
+
+    color:white;
+
+    text-shadow:
+
+    0 3px 10px rgba(0,0,0,.4),
+
+    0 0 15px rgba(239,68,68,.25);
+
+    animation:
+    japaneseFloat 3s ease-in-out infinite;
+}
+
+@keyframes japaneseFloat{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-4px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+}
+
+/* ANGKA MENGAMBANG */
+
+.stats .card .num{
+
+    font-size:30px;
+
+    font-weight:900;
+
+    margin-top:5px;
+
+    color:white;
+
+    text-shadow:
+
+    0 2px 0 rgba(255,255,255,.15),
+
+    0 6px 14px rgba(0,0,0,.45),
+
+    0 0 16px rgba(255,255,255,.15);
+
+    animation:
+    floatingText 3s ease-in-out infinite;
+}
+
+/* ANIMASI */
+
+@keyframes floatingText{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-4px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+}
+.stats .card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-50%;
+    left:-60%;
+
+    width:80%;
+    height:200%;
+
+    background:
+    linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.08),
+    transparent
+    );
+
+    transform:rotate(25deg);
+
+    animation:
+    shineMove 5s linear infinite;
+}
+
+@keyframes shineMove{
+
+    from{
+        left:-80%;
+    }
+
+    to{
+        left:140%;
+    }
+}
 
         /* TABLE */
         .table-wrap { overflow-x: auto; background: rgba(255,255,255,0.05); border-radius: 15px; }
@@ -556,6 +1024,66 @@ justify-content:space-between;
 font-weight:bold;
 
 }
+.brand-text{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    line-height:1;
+}
+
+.brand-text h1{
+
+    font-size:clamp(28px,5vw,42px);
+
+    font-weight:1000;
+
+    letter-spacing:3px;
+
+    color:white;
+
+    text-shadow:
+
+    0 3px 10px rgba(0,0,0,.35),
+
+    0 0 12px rgba(255,255,255,.12);
+
+    margin:0;
+}
+
+.brand-text h2{
+
+    margin-top:6px;
+
+    font-size:clamp(14px,2vw,20px);
+
+    font-weight:800;
+
+    letter-spacing:2px;
+
+    color:#cbd5e1;
+
+    text-shadow:
+    0 2px 6px rgba(0,0,0,.35);
+}
+
+.brand-text{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    line-height:1;
+
+    text-align:center;
+}
     </style>
 </head>
 <body>
@@ -571,13 +1099,15 @@ font-weight:bold;
 
         </div>
 
-        <div class="brand-text">
+       <div class="brand-text">
 
-            <h1>BMI TAEKWONDO ACADEMY</h1>
+    <h1>BMI</h1>
 
-            <p>admin paling asik sedunia 😎</p>
+    <h2>TAEKWONDO ACADEMY</h2>
 
-        </div>
+    <p>admin paling asik sedunia 😎</p>
+
+</div>
 
     </div>
 
@@ -602,8 +1132,7 @@ onclick="exportExcel()">
 </button>
 
 <button
-class="btn"
-style="background:#f59e0b;"
+class="btn bmi-btn"
 onclick="toggleBMIApp(true)">
 Stopwatch
 </button>
@@ -959,6 +1488,8 @@ onclick="toggleBMIApp(false)">
 </div>
 
 <div class="footer">
+    <h2>Jika ada keluhan dengan aplikasi ini hubungi Bapaknya Tata</h2>
+
     BMI Taekwondo Academy Management System © 2026
 </div>
 
@@ -974,15 +1505,32 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-function getMingguKey() {
-    const now = new Date();
 
-    const tahun = now.getFullYear();
-    const bulan = now.getMonth() + 1;
+function getMingguKe() {
+    const now = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Jakarta"
+        })
+    );
 
     const tanggal = now.getDate();
 
-    const mingguKe = Math.ceil(tanggal / 7);
+    if (tanggal < 3) return 4;
+    if (tanggal >= 31) return 1;
+
+    return Math.floor((tanggal - 3) / 7) + 1;
+}
+
+function getMingguKey() {
+    const now = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Jakarta"
+        })
+    );
+
+    const tahun = now.getFullYear();
+    const bulan = now.getMonth() + 1;
+    const mingguKe = getMingguKe();
 
     return `${tahun}-${bulan}-Minggu-${mingguKe}`;
 }
@@ -1020,25 +1568,40 @@ function loadData() {
             isLunas ? lunas++ : belum++;
 
            let tombolPeringatan = "";
+// Jika member belum lunas, tampilkan tombol peringatan
+if (!isLunas) {
+    tombolPeringatan =
+        `<button class="btn btn-caution"
+        onclick="peringatkan('${doc.id}')">⚠️</button>`;
+}
 
-const mingguSekarang = getCurrentWeekNumber();
+const mingguSekarang =
+Math.ceil(new Date().getDate() / 7);
 
 let mingguBayar = 0;
 
 if (d.minggu_bayar) {
 
-    const dataBayar = d.minggu_bayar.split("-");
+    const match =
+    d.minggu_bayar.match(/Minggu-(\d+)/);
 
-    mingguBayar = parseInt(dataBayar[3]) || 0;
+    mingguBayar =
+    match ? parseInt(match[1]) : 0;
 }
+
+const hariIni = new Date().getDay(); // Senin = 1
+const hariSenin = hariIni === 1;
 
 const belumBayarMingguIni = mingguBayar < mingguSekarang;
 
-if (belumBayarMingguIni) {
+if (hariSenin && belumBayarMingguIni) {
+
     const sedangDiperingatkan = d.peringatan === true;
     const sudahDilihat = d.peringatan_dilihat === true;
 
-    if (!sedangDiperingatkan || sudahDilihat) {
+    // tombol muncul hanya jika belum diperingatkan
+    if (!sedangDiperingatkan && !sudahDilihat) {
+
         tombolPeringatan =
         `<button class="btn btn-caution"
         onclick="peringatkan('${doc.id}')">⚠️</button>`;
@@ -1071,13 +1634,20 @@ if (belumBayarMingguIni) {
 
 // --- FUNGSI PERINGATKAN (UPDATE) ---
 function peringatkan(id) {
-    if (confirm("Kirim peringatan ke member?")) {
-        db.collection("siswa").doc(id).update({ 
-            peringatan: true, 
-            peringatan_dilihat: false // Reset agar tombol sembunyi sampai member buka HP
-        });
-        alert("Peringatan dikirim! Tombol akan sembunyi sampai member melihat pesan ini.");
-    }
+
+    if (!confirm("Kirim peringatan ke member?")) return;
+
+    db.collection("siswa").doc(id).update({
+
+        peringatan: true,
+        peringatan_dilihat: false,
+        tanggal_peringatan: new Date().toISOString()
+
+    }).then(() => {
+
+        alert("Peringatan berhasil dikirim!");
+
+    });
 }
 
 // --- FUNGSI BAYAR (UPDATE) ---
@@ -1117,12 +1687,19 @@ const textRiwayat =
 
 riwayat.push(textRiwayat);
         
-        ref.update({ 
-            minggu_bayar: mingguIni, 
-            riwayat_kas: riwayat, 
-            peringatan: false,           // Hapus status peringatan
-            peringatan_dilihat: false    // Reset status lihat
-        });
+       ref.update({
+         
+
+    minggu_bayar: mingguIni,
+    status_pembayaran: "Lunas",
+    status_kewajiban: "Lunas",
+
+    riwayat_kas: riwayat,
+
+    peringatan: false,
+    peringatan_dilihat: true
+
+});
     });
 }
 
