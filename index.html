@@ -438,6 +438,35 @@ letter-spacing:.8px;position:relative;
 
     transition:.35s;
 }
+.belum-card{
+cursor:pointer;
+transition:.3s;
+}
+
+.belum-card:hover{
+
+transform:
+translateY(-5px)
+scale(1.03);
+
+box-shadow:
+0 10px 25px rgba(239,68,68,.35);
+
+}
+
+.lihat-text{
+
+margin-top:10px;
+
+font-size:12px;
+
+opacity:.7;
+
+font-weight:700;
+
+letter-spacing:1px;
+
+}
 
 /* MATAHARI JEPANG */
 
@@ -1477,7 +1506,14 @@ onclick="toggleBMIApp(false)">
 <div class="stats">
     <div class="card"><h3>Total</h3><div class="num" id="totalMember">0</div></div>
     <div class="card"><h3>Lunas</h3><div class="num" id="totalLunas">0</div></div>
-    <div class="card"><h3>Belum</h3><div class="num" id="totalBelum">0</div></div>
+    <div class="card belum-card" onclick="showBelumBayar()">
+<h3>Belum</h3>
+<div class="num" id="totalBelum">0</div>
+
+<div class="lihat-text">
+Klik untuk melihat
+</div>
+</div>
     <div class="card"><h3>Pemasukan</h3><div class="num" id="pemasukan">Rp0</div></div>
 </div>
 
@@ -1541,7 +1577,51 @@ onclick="toggleBMIApp(false)">
 
     BMI Taekwondo Academy Management System © 2026
 </div>
+<!-- MODAL BELUM BAYAR -->
 
+<div
+class="modal"
+id="belumBayarModal">
+
+<div
+class="modal-content jadwal-popup">
+
+<h2
+style="
+margin-bottom:20px;
+color:#ef4444;
+">
+
+❌ Member Belum Bayar
+
+</h2>
+
+<div
+id="belumBayarList"
+
+style="
+max-height:400px;
+overflow-y:auto;
+">
+
+</div>
+
+<button
+class="btn btn-delete"
+style="
+width:100%;
+margin-top:20px;
+"
+
+onclick="toggleBelumModal(false)">
+
+Tutup
+
+</button>
+
+</div>
+
+</div>
 <script>
 // --- CONFIG FIREBASE ---
 const firebaseConfig = {
@@ -2406,6 +2486,115 @@ setTimeout(()=>{
 osc.stop();
 
 },300);
+}
+function toggleBelumModal(show){
+
+document.getElementById(
+"belumBayarModal"
+).style.display = show
+? "block"
+: "none";
+
+}
+
+async function showBelumBayar(){
+
+toggleBelumModal(true);
+
+const list =
+document.getElementById(
+"belumBayarList"
+);
+
+list.innerHTML =
+"<p>Memuat data...</p>";
+
+const mingguNow =
+getMingguKey();
+
+const snapshot =
+await db.collection("siswa").get();
+
+let html = "";
+
+snapshot.forEach(doc=>{
+
+const d = doc.data();
+
+const belumBayar =
+d.minggu_bayar !== mingguNow;
+
+if(belumBayar){
+
+html += `
+
+<div style="
+padding:14px;
+margin-bottom:10px;
+background:rgba(239,68,68,.12);
+border:1px solid rgba(239,68,68,.2);
+border-radius:14px;
+">
+
+<div style="
+font-size:16px;
+font-weight:800;
+color:white;
+">
+
+${d.nama || "-"}
+
+</div>
+
+<div style="
+margin-top:5px;
+font-size:13px;
+opacity:.7;
+">
+
+🥋 ${d.warna_sabuk || "-"}
+
+</div>
+
+<div style="
+margin-top:5px;
+font-size:13px;
+opacity:.7;
+">
+
+📱 ${d.nomor_hp || "-"}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+});
+
+if(html === ""){
+
+html = `
+
+<div style="
+padding:15px;
+background:rgba(34,197,94,.15);
+border-radius:14px;
+font-weight:bold;
+">
+
+✅ Semua member sudah bayar
+
+</div>
+
+`;
+
+}
+
+list.innerHTML = html;
+
 }
 </script>
 
