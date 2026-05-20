@@ -1220,6 +1220,15 @@ class="btn btn-add"
 onclick="openAddModal()">
 ➕ Tambah Member
 </button>
+<button
+class="btn btn-caution"
+style="color: white; font-weight: 900;"
+onclick="prosesPotongKuotaMingguan()">
+🔄 Sinkronisasi Minggu Baru
+</button>
+
+<button class="btn btn-danger" onclick="tombolResetManualBulan()" style="background-color: #ef4444; font-weight: bold; border-radius: 12px; padding: 10px 20px;">💥 Reset Total Bulanan</button>
+
 
 </div>
 <div class="card">
@@ -1692,9 +1701,11 @@ function loadData() {
 
             total++;
             
-            // 1. Cek Status Lunas
-            const isLunas = d.minggu_bayar === mingguNow;
-            isLunas ? lunas++ : belum++;
+           // 1. Cek Status Lunas (Berdasarkan minggu ini ATAU masih punya kuota deposit)
+const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
+isLunas ? lunas++ : belum++;
+
 
            let tombolPeringatan = "";
 // Jika member belum lunas, tampilkan tombol peringatan
@@ -1743,11 +1754,16 @@ if (hariSenin && belumBayarMingguIni) {
                 <td>${d.warna_sabuk || "-"}</td>
                 <td>${d.nomor_hp || "-"}</td>
                 <td>${d.berat_badan || 0}kg / ${d.tinggi_badan || 0}cm</td>
-                <td><span class="badge ${isLunas ? 'green' : 'red'}">${isLunas ? 'Lunas' : 'Belum'}</span></td>
+                <td>
+    <span class="badge ${isLunas ? 'green' : 'red'}">${isLunas ? 'Lunas' : 'Belum'}</span>
+    ${punyaKuota ? `<div style="font-size:11px; opacity:0.7; margin-top:4px; color:#38bdf8;">Sisa: ${d.kuota_kas} Mgg</div>` : ''}
+</td>
                 <td>
                     <button class="btn btn-pay" onclick="bayar('${doc.id}')" ${isLunas ? 'disabled style="opacity:0.5"' : ''}>Bayar</button>
-                    <button class="btn btn-edit" onclick="editData('${doc.id}')">Edit</button>
-                    <button class="btn btn-delete" onclick="hapus('${doc.id}')">Hapus</button>
+<button class="btn" style="background-color: #eab308; color: #000; font-weight: bold; padding: 10px 16px; font-size: 13px; border-radius: 10px; border: none; cursor: pointer;" onclick="koreksiKuotaManual('${doc.id}')">✏️ Kuota</button>
+<button class="btn btn-edit" onclick="editData('${doc.id}')">Edit</button>
+<button class="btn btn-delete" onclick="hapus('${doc.id}')">Hapus</button>
+
                     ${tombolPeringatan}
                 </td>
             </tr>`;
@@ -1778,66 +1794,63 @@ function peringatkan(id) {
 
     });
 }
-
-// --- FUNGSI BAYAR (UPDATE) ---
+// --- FUNGSI BAYAR MULTI-MINGGU (SUPER BRILIAN) ---
 function bayar(id) {
-    if (!confirm("Catat pembayaran kas minggu ini?")) return;
-   const mingguIni = getMingguKey();
+    // Beri pilihan pop-up kepada admin mau input berapa minggu
+    const jumlahMingguInput = prompt("Mau bayar berapa minggu sekaligus?\n\nKetik angka minggu (Contoh: 1, 4, atau 20):", "1");
+    
+    // Validasi input dari pembatalan prompt
+    if (jumlahMingguInput === null) return; 
+
+    const jumlahMinggu = parseInt(jumlahMingguInput);
+    if (isNaN(jumlahMinggu) || jumlahMinggu <= 0) {
+        alert("Pembayaran dibatalkan. Input jumlah minggu tidak valid.");
+        return;
+    }
+
+    const mingguIni = getMingguKey();
     const ref = db.collection("siswa").doc(id);
 
     ref.get().then(doc => {
-        let riwayat = doc.data().riwayat_kas || [];
+        const d = doc.data();
+        let riwayat = d.riwayat_kas || [];
         
+        // Ambil kuota kas lama (jika ada), lalu jumlahkan dengan kuota baru
+        let kuotaSekarang = parseInt(d.kuota_kas || 0);
+        kuotaSekarang += jumlahMinggu;
 
-const now = new Date();
+        const now = new Date();
+        const namaHari = now.toLocaleDateString("id-ID", { weekday: "long" });
+        const tanggalLengkap = now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+        const totalUang = jumlahMinggu * 5000;
 
-const namaHari = now.toLocaleDateString("id-ID", {
-    weekday: "long"
-});
-
-const tanggalLengkap = now.toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-});
-
-const mingguKe = Math.ceil(now.getDate() / 7);
-
-const namaMinggu = [
-    "",
-    "Pertama",
-    "Kedua",
-    "Ketiga",
-    "Keempat",
-    "Kelima"
-];
-
-const textRiwayat =
-`Minggu ${namaMinggu[mingguKe]} • ${namaHari}, ${tanggalLengkap}`;
-
-riwayat.push(textRiwayat);
+        // Teks catatan riwayat kas agar admin tidak bingung
+        let textRiwayat = "";
+        if (jumlahMinggu >= 20) {
+            textRiwayat = `🔥 BORONGAN KAS (${jumlahMinggu} Minggu - Rp${totalUang.toLocaleString('id-ID')}) • ${namaHari}, ${tanggalLengkap}`;
+        } else {
+            textRiwayat = `Bayar Kas (${jumlahMinggu} Minggu - Rp${totalUang.toLocaleString('id-ID')}) • ${namaHari}, ${tanggalLengkap}`;
+        }
         
-      ref.update({
-
-    minggu_bayar: mingguIni,
-
-    status_pembayaran: "Lunas",
-
-    status_kewajiban: "Lunas",
-
-    status_kas_mingguan: "Lunas",
-
-    status_kas: "Lunas",
-
-    riwayat_kas: riwayat,
-
-    peringatan: false,
-
-    peringatan_dilihat: true
-
-});
+        riwayat.push(textRiwayat);
+        
+        // Update ke Firebase Firestore
+        ref.update({
+            minggu_bayar: mingguIni,      // Kunci minggu ini lunas
+            kuota_kas: kuotaSekarang,     // Simpan sisa deposit kuota minggunya
+            status_pembayaran: "Lunas",
+            status_kewajiban: "Lunas",
+            status_kas_mingguan: "Lunas",
+            status_kas: "Lunas",
+            riwayat_kas: riwayat,
+            peringatan: false,
+            peringatan_dilihat: true
+        }).then(() => {
+            alert(`🎉 Berhasil mencatat pembayaran kas untuk ${jumlahMinggu} minggu (Total: Rp${totalUang.toLocaleString('id-ID')})!`);
+        });
     });
 }
+
 
 // --- FUNGSI LAINNYA (TIDAK BERUBAH) ---
 function openAddModal() {
@@ -1863,73 +1876,77 @@ document.getElementById("studentForm").onsubmit = function(e) {
         tanggal_lahir: document.getElementById("form-tgl").value,
         berat_badan: document.getElementById("form-berat").value,
         tinggi_badan: document.getElementById("form-tinggi").value,
-        warna_sabuk: document.getElementById("form-sabuk").value,
-        minggu_bayar: status === "Lunas" ? mingguNow : ""
+        warna_sabuk: document.getElementById("form-sabuk").value
     };
 
-   if (id) {
+    if (id) {
+        const ref = db.collection("siswa").doc(id);
 
-    const ref = db.collection("siswa").doc(id);
+        ref.get().then(doc => {
+            let lama = doc.data();
+            let riwayat = lama.riwayat_kas || [];
 
-    ref.get().then(doc => {
+            if (status === "Belum Lunas") {
+                data.minggu_bayar = "";
+                data.kuota_kas = 0;
+                data.status_kas_mingguan = "Belum Lunas";
+                data.status_pembayaran = "Belum Lunas";
+                data.status_kas = "Belum Lunas";
 
-        let lama = doc.data();
+                const now = new Date();
+                const waktuKoreksi = now.toLocaleDateString("id-ID") + " " + now.toLocaleTimeString("id-ID");
+                riwayat.push(`⚠️ Koreksi data oleh Admin: Status diubah ke Belum Lunas (${waktuKoreksi})`);
+                data.riwayat_kas = riwayat;
+                
+                let pembayaran = lama.pembayaran || [];
+                pembayaran = pembayaran.filter(function(p){
+                    return p.key !== mingguNow;
+                });
+                data.pembayaran = pembayaran;
+            } else {
+                data.kuota_kas = parseInt(lama.kuota_kas || 0);
+                if (data.kuota_kas === 0) {
+                    data.kuota_kas = 1;
+                }
+                data.status_kas_mingguan = "Lunas";
+                data.status_pembayaran = "Lunas";
+                data.status_kas = "Lunas";
+                data.minggu_bayar = mingguNow;
+            }
 
-        let riwayat = lama.riwayat_kas || [];
-
-        // Jika status diubah jadi Belum Lunas
-        if (status === "Belum Lunas") {
-
-            // hapus pembayaran minggu ini
-            data.minggu_bayar = "";
-
-            data.status_kas_mingguan = "Belum Lunas";
-
-            data.status_pembayaran = "Belum Lunas";
-
-            data.status_kas = "Belum Lunas";
-
-            // hapus riwayat terakhir
-            riwayat.pop();
-
-            data.riwayat_kas = riwayat;
-            
-            let pembayaran = lama.pembayaran || [];
-
-// hapus pembayaran minggu ini
-pembayaran = pembayaran.filter(function(p){
-
-    return p.key !== getMingguKey();
-
-});
-
-data.pembayaran = pembayaran;
-
-        } else {
-
+            ref.update(data).then(() => {
+                loadData();
+                closeModal();
+            });
+        });
+    } else {
+        // Jika menambah member baru dari nol
+        if (status === "Lunas") {
+            data.minggu_bayar = mingguNow;
+            data.kuota_kas = 1;
             data.status_kas_mingguan = "Lunas";
-
             data.status_pembayaran = "Lunas";
-
             data.status_kas = "Lunas";
+        } else {
+            data.minggu_bayar = "";
+            data.kuota_kas = 0;
+            data.status_kas_mingguan = "Belum Lunas";
+            data.status_pembayaran = "Belum Lunas";
+            data.status_kas = "Belum Lunas";
         }
-
-        ref.update(data);
-
-    });
-
-} else {
-
-    db.collection("siswa").add(data);
-
-}
-    closeModal();
+        db.collection("siswa").add(data).then(() => {
+            loadData();
+            closeModal();
+        });
+    }
 };
+
 
 function editData(id) {
     db.collection("siswa").doc(id).get().then(doc => {
         const d = doc.data();
-        const mingguNow = new Date().toISOString().slice(0, 7);
+        const mingguNow = getMingguKey(); // Samakan penentu key minggunya
+        
         document.getElementById("student-id").value = id;
         document.getElementById("form-nama").value = d.nama || "";
         document.getElementById("form-username").value = d.username || "";
@@ -1939,15 +1956,18 @@ function editData(id) {
         document.getElementById("form-berat").value = d.berat_badan || "";
         document.getElementById("form-tinggi").value = d.tinggi_badan || "";
         document.getElementById("form-sabuk").value = d.warna_sabuk || "Putih";
-        document.getElementById("form-status").value =
-d.minggu_bayar === mingguNow ||
-d.status_kas_mingguan === "Lunas"
-? "Lunas"
-: "Belum Lunas";
+        
+        // LOGIKA AMAN: Jika minggu_bayar cocok ATAU masih punya kuota_kas, tampilkan sebagai "Lunas" di dropdown
+        const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+        const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
+        
+        document.getElementById("form-status").value = isLunas ? "Lunas" : "Belum Lunas";
+        
         document.getElementById("modalTitle").innerText = "Edit Member";
         document.getElementById("studentModal").style.display = "block";
     });
 }
+
 
 function hapus(id) {
     if (confirm("Ingin Menendang Anak ini?")) db.collection("siswa").doc(id).delete();
@@ -2216,27 +2236,13 @@ async function toggleAbsen(siswaId, isChecked) {
                 hadir: firebase.firestore.FieldValue.arrayRemove(siswaId)
             });
         }
-        // Refresh data setelah update
-        const updatedDoc = await ref.get();
-        const count = updatedDoc.exists ? (updatedDoc.data().hadir || []).length : 0;
-        document.getElementById("total-hadir").innerText = countHadir;
-
-document.getElementById("tidak-hadir-list").innerHTML =
-tidakHadirHTML || `
-<div style="
-padding:10px;
-background:rgba(34,197,94,0.15);
-border-radius:10px;
-">
-✅ Semua siswa hadir hari ini
-</div>
-`;
-
-updateRanking();
+        // Segarkan data pop-up absensi secara aman
+        loadAbsensi();
     } catch (e) {
         console.error("Gagal simpan absensi:", e);
     }
 }
+
 
 // Fungsi Hitung Ranking Bulanan
 async function updateRanking() {
@@ -2521,8 +2527,9 @@ snapshot.forEach(doc=>{
 
 const d = doc.data();
 
-const belumBayar =
-d.minggu_bayar !== mingguNow;
+const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+const belumBayar = (d.minggu_bayar !== mingguNow) && !punyaKuota;
+
 
 if(belumBayar){
 
@@ -2596,6 +2603,153 @@ font-weight:bold;
 list.innerHTML = html;
 
 }
+// --- FUNGSI RESET / POTONG DEPOSIT KUOTA SAAT MINGGU BERGANTI ---
+async function prosesPotongKuotaMingguan() {
+    if (!confirm("PENTING!\nApakah Anda ingin menyinkronkan data untuk minggu baru?\nSistem akan otomatis memotong 1 kuota deposit bagi siswa yang membayar borongan.")) return;
+    
+    const snapshot = await db.collection("siswa").get();
+    let totalDipotong = 0;
+    
+    // Gunakan Firestore Batch agar proses update massal cepat dan aman
+    const batch = db.batch();
+    
+    snapshot.forEach(doc => {
+        const d = doc.data();
+        const kuota = parseInt(d.kuota_kas || 0);
+        
+        if (kuota > 0) {
+            const kuotaBaru = kuota - 1;
+            const ref = db.collection("siswa").doc(doc.id);
+            
+            batch.update(ref, {
+                kuota_kas: kuotaBaru
+            });
+            totalDipotong++;
+        }
+    });
+    
+    await batch.commit();
+    alert(`⚡ Sukses menyinkronkan minggu baru!\nSebanyak ${totalDipotong} member yang borongan kuotanya berhasil dipotong 1 minggu.`);
+    loadData();
+}
+// =========================================================
+// FUNGSI OTOMATIS & MANUAL UNTUK RESET DATA SETIAP AWAL BULAN
+// =========================================================
+async function cekDanResetAwalBulanOtomatis() {
+    const now = new Date();
+    const bulanTahunSekarang = `${now.getFullYear()}-${now.getMonth() + 1}`; // Contoh: 2026-5
+    
+    // Ambil catatan kapan terakhir kali reset dilakukan dari database
+    const metaRef = db.collection("sistem_meta").doc("terakhir_reset_bulan");
+    
+    try {
+        const doc = await metaRef.get();
+        let bulanTerakhirReset = "";
+        
+        if (doc.exists) {
+            bulanTerakhirReset = doc.data().bulan || "";
+        }
+        
+        // Jika bulan sekarang tidak sama dengan bulan terakhir kali reset (Artinya sudah ganti bulan baru!)
+        if (bulanTerakhirReset !== bulanTahunSekarang) {
+            console.log("🌙 Mendeteksi awal bulan baru! Menjalankan reset riwayat otomatis...");
+            await eksekusiResetRiwayatBulanan();
+            // Simpan tanda bahwa bulan ini sudah berhasil di-reset agar tidak berulang-ulang
+            await metaRef.set({ bulan: bulanTahunSekarang });
+        }
+    } catch (error) {
+        console.error("Gagal mengecek status reset bulanan:", error);
+    }
+}
+
+async function eksekusiResetRiwayatBulanan() {
+    const snapshot = await db.collection("siswa").get();
+    const batch = db.batch();
+    let totalSiswa = 0;
+
+    snapshot.forEach(doc => {
+        const ref = db.collection("siswa").doc(doc.id);
+        // Reset total: Kosongkan riwayat kas teks, kosongkan array pembayaran, kembalikan kuota ke 0
+        batch.update(ref, {
+            riwayat_kas: [],
+            pembayaran: [],
+            kuota_kas: 0,
+            minggu_bayar: "",
+            status_pembayaran: "Belum Lunas",
+            status_kas_mingguan: "Belum Lunas",
+            status_kas: "Belum Lunas"
+        });
+        totalSiswa++;
+    });
+
+    await batch.commit();
+    return totalSiswa;
+}
+
+// Fungsi jika Admin ingin mereset paksa secara manual lewat tombol
+async function tombolResetManualBulan() {
+    const konfirmasi = confirm("⚠️ PERINGATAN KELAS BERAT!\n\nApakah Anda yakin ingin MENGHAPUS SEMUA RIWAYAT PEMBAYARAN DAN KUOTA seluruh siswa sekarang?\n\nData yang sudah dihapus tidak bisa dikembalikan!");
+    if (!konfirmasi) return;
+
+    const pengetikan = prompt("Ketik kata 'SETUJU' (huruf besar semua) untuk melanjutkan penghapusan massal:");
+    if (pengetikan !== "SETUJU") {
+        alert("Gagal! Kata konfirmasi salah.");
+        return;
+    }
+
+    try {
+        const total = await eksekusiResetRiwayatBulanan();
+        // Set juga meta data bulan agar sistem tahu bulan ini sudah bersih
+        const now = new Date();
+        const bulanTahunSekarang = `${now.getFullYear()}-${now.getMonth() + 1}`;
+        await db.collection("sistem_meta").doc("terakhir_reset_bulan").set({ bulan: bulanTahunSekarang });
+        
+        alert(`🎉 Sukses Besar! Riwayat dan kuota bulanan ${total} siswa telah dibersihkan menjadi kosong total!`);
+        loadData();
+    } catch (err) {
+        alert("Terjadi kesalahan: " + err.message);
+    }
+}
+
+// --- FUNGSI DARURAT JIKA ADMIN SALAH INPUT JUMLAH MINGGU ---
+function koreksiKuotaManual(id) {
+    const ref = db.collection("siswa").doc(id);
+    ref.get().then(doc => {
+        if (!doc.exists) return;
+        const d = doc.data();
+        const kuotaSekarang = parseInt(d.kuota_kas || 0);
+        
+        const inputKuotaBaru = prompt(`Koreksi Jumlah Kuota Kas Masal untuk ${d.nama}:\n\nKuota saat ini: ${kuotaSekarang} Minggu\nSilakan masukkan angka kuota yang benar:`, kuotaSekarang);
+        
+        if (inputKuotaBaru === null) return; // Batal
+        
+        const kuotaBaru = parseInt(inputKuotaBaru);
+        if (isNaN(kuotaBaru) || kuotaBaru < 0) {
+            alert("Input angka tidak valid!");
+            return;
+        }
+        
+        let riwayat = d.riwayat_kas || [];
+        const now = new Date();
+        const waktuKoreksi = now.toLocaleDateString("id-ID") + " " + now.toLocaleTimeString("id-ID");
+        riwayat.push(`✏️ Admin mengoreksi kuota kas dari ${kuotaSekarang} menjadi ${kuotaBaru} Minggu (${waktuKoreksi}).`);
+        
+        ref.update({
+            kuota_kas: kuotaBaru,
+            riwayat_kas: riwayat,
+            minggu_bayar: kuotaBaru > 0 ? getMingguKey() : "",
+            status_pembayaran: kuotaBaru > 0 ? "Lunas" : "Belum Lunas",
+            status_kas_mingguan: kuotaBaru > 0 ? "Lunas" : "Belum Lunas",
+            status_kas: kuotaBaru > 0 ? "Lunas" : "Belum Lunas"
+        }).then(() => {
+            alert("Data kuota berhasil dikoreksi!");
+            cekDanResetAwalBulanOtomatis();
+            loadData();
+        });
+    });
+}
+
+
 </script>
 
 </body>
