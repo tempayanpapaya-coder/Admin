@@ -3,364 +3,1094 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMI Academy - System Maintenance & Upgrade</title>
+    <title>BMI Taekwondo Academy - Admin Dashboard</title>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Marcellus&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Marcellus&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: #0d0601;
-    color: #ffffff;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-x: hidden; /* Mengunci geser kanan-kiri saja agar tidak melar */
-    overflow-y: auto;   /* Mengizinkan geser atas-bawah jika layar HP sempit */
-    position: relative;
-    padding: 40px 20px; /* Menambah jarak atas-bawah agar tidak terlalu mepet */
-}
-
-
-        /* Background Animasi Keraton Masa Depan */
-        .bg-overlay {
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 50% 50%, rgba(44, 26, 4, 0.6) 0%, rgba(13, 6, 1, 0.95) 100%),
-                url('https://www.transparenttextures.com/patterns/black-thread-light.png');
-            z-index: 1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #1f1101, #2c1a04, #130a01);
+            min-height: 100vh;
+            padding: 15px;
+            color: #fff;
         }
 
-        /* Partikel Cahaya Emas Bergerak */
-        .particles {
+        /* --- HEADER KONTANER JAWA KLASIK --- */
+        .header-top-jawa {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: linear-gradient(135deg, #2c1a04, #3d250a, #1f1101);
+            border: 3px double #d4af37; 
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(212, 175, 55, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-top-jawa::before {
+            content: "";
             position: absolute;
             inset: 0;
-            z-index: 2;
+            opacity: 0.04;
+            background-image: url('https://www.transparenttextures.com/patterns/black-thread-light.png'); 
             pointer-events: none;
         }
 
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(214, 175, 55, 0.8) 0%, rgba(214, 175, 55, 0) 70%);
-            border-radius: 50%;
-            animation: floatUp 8s infinite linear;
-            opacity: 0.3;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-            50% { opacity: 0.6; }
-            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
-        }
-
-        /* Kontainer Utama */
-        .maintenance-container {
-            position: relative;
-            z-index: 10;
-            max-width: 650px;
-            width: 100%;
-            background: linear-gradient(135deg, rgba(44, 26, 4, 0.75), rgba(19, 10, 1, 0.9));
-            border: 2px solid #d4af37;
-            border-radius: 30px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.8),
-                inset 0 0 30px rgba(214, 175, 55, 0.15);
-            backdrop-filter: blur(10px);
-            animation: containerPulse 4s infinite alternate;
-        }
-
-        @keyframes containerPulse {
-            0% { box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(214, 175, 55, 0.15); border-color: #d4af37; }
-            100% { box-shadow: 0 20px 60px rgba(214, 175, 55, 0.1), inset 0 0 40px rgba(214, 175, 55, 0.25); border-color: #ffea9f; }
-        }
-
-        /* Efek Ornamen Sudut Klasik Keraton */
-        .ornament {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 2px solid #d4af37;
-            opacity: 0.7;
-        }
-        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
-        .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
-        .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
-        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
-
-        /* Logo / Icon Sektor Upgrade Hologram */
-        .icon-box {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 25px;
+        .brand-wrap-jawa {
             display: flex;
-            justify-content: center;
             align-items: center;
-        }
-
-        .hologram-ring {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed #d4af37;
-            border-radius: 50%;
-            animation: rotateRing 12s linear infinite;
-        }
-
-        .hologram-ring-inner {
-            position: absolute;
-            inset: 12px;
-            border: 1px solid rgba(243, 229, 171, 0.4);
-            border-radius: 50%;
-            border-top: 2px solid #ffcc00;
-            animation: rotateRingRev 6s linear infinite;
-        }
-
-        @keyframes rotateRing { 100% { transform: rotate(360deg); } }
-        @keyframes rotateRingRev { 100% { transform: rotate(-360deg); } }
-
-        .main-icon {
-            font-size: 50px;
-            animation: floatIcon 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 15px #ffcc00);
-        }
-
-        @keyframes floatIcon {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.05); }
-        }
-
-        /* Teks Judul & Deskripsi */
-        h1 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(24px, 5vw, 36px);
-            color: #f3e5ab;
-            letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(214, 175, 55, 0.5);
-            margin-bottom: 5px;
-        }
-
-        h2 {
-            font-family: 'Marcellus', serif;
-            font-size: 16px;
-            color: #d4af37;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 25px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            background: linear-gradient(90deg, #784807, #301c01);
-            border: 1px solid #d4af37;
-            color: #ffcc00;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px rgba(120, 72, 7, 0.4);
-            margin-bottom: 25px;
-        }
-
-        p.desc {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #e2ecd8;
-            opacity: 0.85;
-            margin-bottom: 30px;
-        }
-
-        /* Progress Bar Canggih */
-        .progress-box {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #5c3a21;
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 30px;
+            gap: 20px;
             position: relative;
+            z-index: 2;
         }
 
-        .progress-info {
+        .logo-box-jawa {
+            width: 90px;
+            height: 90px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #1f1101;
+            padding: 5px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-box-jawa img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            filter: sepia(20%) contrast(110%);
+        }
+
+        .brand-text-jawa {
             display: flex;
-            justify-content: space-between;
-            font-size: 12px;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-text-jawa h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #f3e5ab; 
+            text-shadow: 2px 2px 0px #000, 0 0 10px rgba(212, 175, 55, 0.6);
+            line-height: 1;
+            margin: 0;
+        }
+
+        .brand-text-jawa h2 {
+            font-family: 'Marcellus', serif;
+            margin-top: 6px;
+            font-size: clamp(14px, 2vw, 19px);
             font-weight: bold;
-            color: #f3e5ab;
-            margin-bottom: 10px;
+            letter-spacing: 3px;
+            color: #d4af37; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .brand-text-jawa p {
+            margin-top: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            font-style: italic;
+            color: #bfa37a; 
+            letter-spacing: 0.5px;
+        }
+
+        .clock-box-jawa {
+            background: #130a01;
+            border: 1px solid #5c3a21;
+            outline: 1px solid #d4af37;
+            outline-offset: -4px;
+            color: #d4af37;
+            padding: 12px 25px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 2;
+        }
+
+        #clock-time {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffcc00;
+            text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
             letter-spacing: 1px;
         }
 
-        .progress-bar-track {
+        #clock-date {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+            color: #c9b097;
+            letter-spacing: 1px;
+        }
+
+        /* --- TOMBOL ACTIONS JAWA KLASIK CEMBUNG MENGKILAP --- */
+        .actions {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
             width: 100%;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .actions .btn {
+            position: relative;
             overflow: hidden;
-            border: 1px solid rgba(214, 175, 55, 0.2);
-            position: relative;
+            border: none;
+            min-height: 62px;
+            border-radius: 14px;
+            font-family: 'Marcellus', 'Segoe UI', serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #f3e5ab;
+            cursor: pointer;
+            text-transform: uppercase;
+            padding: 8px 5px;
+            text-align: center;
+            background: linear-gradient(to bottom, #4a2f13 0%, #291705 50%, #170d02 100%);
+            border: 1px solid #d4af37;
+            box-shadow: 
+                inset 0 3px 5px rgba(255, 255, 255, 0.25), 
+                inset 0 -3px 6px rgba(0, 0, 0, 0.7),       
+                0 4px 8px rgba(0, 0, 0, 0.4);             
+            transition: all 0.2s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
         }
 
-        .progress-bar-fill {
-            width: 78%; /* Angka progress */
-            height: 100%;
-            background: linear-gradient(90deg, #4a2f13, #d4af37, #ffcc00);
-            border-radius: 10px;
-            box-shadow: 0 0 10px #ffcc00;
-            position: relative;
-            animation: shimmer 2s infinite linear;
-            background-size: 200% 100%;
+        .actions .btn::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border-radius: 12px 12px 0 0;
+            pointer-events: none;
         }
 
-        @keyframes shimmer {
-            0% { background-position: 100% 0; }
-            100% { background-position: -100% 0; }
+        .actions .btn::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -150%;
+            width: 80%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            transform: skewX(-30deg);
+            transition: 0.6s ease;
+        }
+        .actions .btn:hover::after { left: 150%; }
+
+        .actions .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.3), inset 0 -3px 6px rgba(0,0,0,0.6), 0 6px 12px rgba(0,0,0,0.5);
+            color: #fff;
+        }
+        .actions .btn:active {
+            transform: translateY(1px);
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        /* Log Sistem Realtime Ghaib/Canggih */
-        .system-logs {
-            background: #0d0601;
-            border-left: 3px solid #d4af37;
-            padding: 12px 15px;
-            border-radius: 0 12px 12px 0;
-            text-align: left;
-            font-family: monospace;
-            font-size: 11px;
-            color: #a7f3d0;
-            height: 55px;
-            overflow: hidden;
-            position: relative;
+        /* WARNA KHUSUS TOMBOL */
+        .actions .btn-export, .actions .btn-add {
+            background: linear-gradient(to bottom, #1e3a1e 0%, #112411 50%, #071007 100%);
+            border-color: #8da47e; color: #e2ecd8;
+        }
+        .actions .bmi-btn {
+            background: linear-gradient(to bottom, #784807 0%, #523002 50%, #301c01 100%);
+            border-color: #d4af37; color: #fcebb6;
+        }
+        .actions .btn-caution {
+            background: linear-gradient(to bottom, #7c2d12 0%, #5b1e0a 50%, #360f04 100%) !important;
+            border-color: #f97316; color: #ffedd5 !important;
+        }
+        .actions .btn-danger {
+            background: linear-gradient(to bottom, #7f1d1d 0%, #581c1c 50%, #3b0707 100%) !important;
+            border-color: #ef4444; color: #fee2e2 !important;
+            padding: 10px 20px;
         }
 
-        .log-line {
-            animation: scanLines 4s infinite linear;
-        }
+        /* --- BUTTONS UMUM LAINNYA --- */
+        .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #fff; transition: .2s; font-size: 13px; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .btn-edit { background: #3b82f6; }
+        .btn-pay { background: #14b8a6; }
+        .btn-delete { background: #ef4444; }
 
-        @keyframes scanLines {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-40px); }
-        }
-
-        /* Footer Hubungi Bapaknya Tata */
-        .footer-info {
-            font-size: 11px;
-            opacity: 0.6;
-            color: #bfa37a;
-            border-top: 1px dashed rgba(92, 58, 33, 0.5);
-            padding-top: 20px;
-        }
-
-        .footer-info b {
-            color: #ffcc00;
-        }
-        .logo{
-width:88px;
-height:88px;
-padding:8px;
-border-radius:24px;
-object-fit:contain;
-background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.03));
-border:1px solid rgba(255,255,255,.08);
-box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 25px rgba(59,130,246,.18);
-transition:.4s;
-}
+        /* SEARCH & STATS */
+        .search-box input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #5c3a21; background: #130a01; color: #fff; margin: 15px 0; }
         
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+            border-radius: 24px;
+            text-align: center;
+            backdrop-filter: blur(14px);
+            background: linear-gradient(145deg, rgba(44, 26, 4, 0.4), rgba(19, 10, 1, 0.6));
+            border: 1px solid #d4af37;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: .35s;
+        }
+        
+        .belum-card { cursor: pointer; transition: .3s; }
+        .belum-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(239,68,68,.35);
+        }
+
+        .lihat-text { margin-top: 10px; font-size: 12px; opacity: .7; font-weight: 700; letter-spacing: 1px; }
+        .card .num { font-size: 24px; font-weight: 800; margin-top: 5px; }
+
+        .stats .card {
+            position: relative;
+            overflow: hidden;
+            padding: 22px;
+            border-radius: 28px;
+            background: linear-gradient(to bottom, #2c1a04 0%, #130a01 100%);
+            border: 1px solid #d4af37;
+            box-shadow: inset 0 2px 3px rgba(255,255,255,0.1), 0 15px 30px rgba(0,0,0,0.5);
+            transition: .35s;
+        }
+
+        .stats .card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.6);
+        }
+
+        .stats .card h3 { font-size: 15px; font-weight: 800; letter-spacing: 2px; color: #f3e5ab; text-transform: uppercase; }
+        .stats .card .num { font-size: 20px; font-weight: 900; margin-top: 5px; color: white; text-shadow: 0 6px 14px rgba(0,0,0,0.45); animation: floatingText 3s ease-in-out infinite; }
+
+        @keyframes floatingText {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; background: rgba(0, 0, 0, 0.3); border: 1px solid #5c3a21; border-radius: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #2c1a04; color: #f3e5ab; padding: 12px; text-align: left; font-size: 14px; border-bottom: 1px solid #d4af37; }
+        td { padding: 12px; border-bottom: 1px solid rgba(92, 58, 33, 0.3); font-size: 13px; vertical-align: middle; font-weight: 600; }
+        .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; }
+        .green { background: #16a34a; }
+        .red { background: #dc2626; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; padding: 20px; }
+        .modal-content { background: #2c1a04; color: #fff; border: 2px solid #d4af37; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-content label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; color: #f3e5ab; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #5c3a21; background: #130a01; color: #16a34a; border-radius: 8px; }
+        option { color: black; }
+
+        .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 12px; padding: 20px 0; border-top: 1px dashed #5c3a21; }
+        
+        /* JADWAL & POPUP ADMIN */
+        .schedule-admin-card { background: rgba(0,0,0,0.3); padding: 18px; border-radius: 18px; margin-bottom: 18px; border: 1px solid #5c3a21; }
+        .schedule-admin-title { font-size: 20px; font-weight: 900; margin-bottom: 15px; color: #d4af37; }
+        .session-item { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 14px; margin-bottom: 12px; }
+        .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-session { margin-top: 10px; background: #16a34a; }
+        .jadwal-popup { max-width: 700px; background: #2c1a04; color: white; border: 2px solid #d4af37; }
+
+        /* STOPWATCH */
+        .super-stopwatch { background: rgba(0,0,0,0.3); border-radius: 30px; padding: 25px; border: 1px solid #5c3a21; }
+        .sw-title { text-align: center; font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #ffcc00; letter-spacing: 2px; }
+        .stopwatch-ring { display: flex; flex-direction: column; align-items: center; overflow: hidden; background: #130a01; padding: 30px; border-radius: 30px; border: 1px solid #d4af37; }
+        .sw-display { font-size: clamp(38px, 9vw, 58px); width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-family: monospace; font-weight: 900; letter-spacing: 2px; line-height: 1; padding: 10px 0; color: #ffcc00; text-shadow: 0 0 10px #ffcc00; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.03); } }
+        .sw-progress { width: 100%; height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-top: 25px; }
+        #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, #d4af37, #ffcc00); transition: .1s; }
+        .sw-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+        .sw-btn { border: none; padding: 15px; border-radius: 18px; font-weight: 900; font-size: 15px; cursor: pointer; transition: .2s; color: white; }
+        .sw-btn:hover { transform: translateY(-3px) scale(1.03); }
+        .start { background: #16a34a; }
+        .pause { background: #f59e0b; }
+        .reset { background: #ef4444; }
+        .lap { background: #3b82f6; }
+        .round-box { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
+        .round-box div { flex: 1; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #5c3a21; }
+        .round-box h2 { margin-top: 8px; font-size: 28px; color: #ffcc00; }
+        .lap-container { margin-top: 20px; max-height: 200px; overflow-y: auto; }
+        .lap-item { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: bold; border-left: 4px solid #d4af37; }
+
+        /* --- MEDIA QUERY OPTIMASI PONSEL (ANTI-RUSAK) --- */
+        @media (max-width: 768px) {
+            .header-top-jawa {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+            }
+            .brand-wrap-jawa {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .clock-box-jawa {
+                width: 100%;
+            }
+            .actions {
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 8px; 
+            }
+            .actions .btn {
+                min-height: 58px; 
+                font-size: 11px;  
+                padding: 6px 3px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
-    
-    <div class="particles" id="particle-container"></div>
-
-    <div class="maintenance-container">
-        <div class="ornament top-left"></div>
-        <div class="ornament top-right"></div>
-        <div class="ornament bottom-left"></div>
-        <div class="ornament bottom-right"></div>
-
-        <div class="icon-box">
-            <div class="hologram-ring"></div>
-            <div class="hologram-ring-inner"></div>
-            <img src="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png" class="logo">
+<div class="header-top-jawa">
+    <div class="brand-wrap-jawa">
+        <div class="logo-box-jawa">
+            <img src="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png" alt="BMI Logo">
         </div>
-
-        <div class="status-badge">⚡ SYSTEM UPGRADE IN PROGRESS</div>
-
-        <h1>BMI ACADEMY</h1>
-        <h2>Aplikasi Sedang dalam perbaikan</h2>
-
-        <p class="desc">
-            Mohon maaf, sistem management sedang dalam proses perbaikan agar supaya tidak berat dan cepet, aman, dan nyaman saat di gunakan..
-        </p>
-
-        <div class="progress-box">
-            <div class="progress-info">
-                <span>⚡ PROSES OPTIMALISASI DATABASE</span>
-                <span id="progress-percent">68%</span>
-            </div>
-            <div class="progress-bar-track">
-                <div class="progress-bar-fill"></div>
-            </div>
-        </div>
-
-        <div class="system-logs">
-            <div class="log-line">
-                [SYSTEM] Refactoring Server Core Architecture...<br>
-                [CORE] Synchronizing SPP & Celengan Matrix Database...<br>
-                [SECURITY] Injecting Keraton Cryptography Layer Security...<br>
-                [SUCCESS] Optimization Complete. Ready to Launch Soon ...<br>
-                [SUCCESS] Optimization Complete. Ready to Launch Soon.
-            </div>
-        </div>
-
-        <div class="footer-info" style="margin-top: 25px;">
-            Jika ada keluhan hubungi <b>Bapakne Tata yang ngeyelan</b>.
+        <div class="brand-text-jawa">
+            <h1>BMI</h1>
+            <h2>TAEKWONDO ACADEMY</h2>
+            <p>Admin paling keren sedunia 😎</p>
         </div>
     </div>
+    <div class="clock-box-jawa">
+        <div id="clock-time">00:00:00</div>
+        <div id="clock-date">Nenggo Sakedhap...</div>
+    </div>
+</div>
 
-    <script>
-        // Membuat partikel emas mengalir secara acak di latar belakang
-        const container = document.getElementById('particle-container');
-        const particleCount = 25;
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            // Posisi acak
-            particle.style.left = Math.random() * 100 + 'vw';
-            particle.style.width = Math.random() * 6 + 2 + 'px';
-            particle.style.height = particle.style.width;
-            
-            // Waktu & delay animasi acak
-            particle.style.animationDuration = Math.random() * 5 + 5 + 's';
-            particle.style.animationDelay = Math.random() * 5 + 's';
-            
-            container.appendChild(particle);
-        }
+<div class="actions">
+    <button class="btn btn-export" onclick="toggleAbsensiPopup(true)">✅ Buka Absensi</button>
+    <button class="btn btn-export" onclick="exportExcel()">📄 Export Excel</button>
+    <button class="btn bmi-btn" onclick="toggleBMIApp(true)">⏱️ Stopwatch</button>
+    <button class="btn btn-add" onclick="openAddModal()">➕ Tambah Member</button>
+    <button class="btn btn-caution" onclick="prosesPotongKuotaMingguan()">🔄 Sinkronisasi Minggu Baru</button>
+    <button class="btn btn-danger" onclick="tombolResetManualBulan()">💥 Reset Total Bulanan</button>
+</div>
 
-        // Simulasi angka progress naik perlahan agar terlihat interaktif & super canggih
-        let percent = 68;
-        const percentText = document.getElementById('progress-percent');
-        const fillBar = document.querySelector('.progress-bar-fill');
-        
-        setInterval(() => {
-            if (percent < 99) {
-                percent += Math.floor(Math.random() * 2);
-                percentText.innerText = percent + "%";
-                fillBar.style.width = percent + "%";
+<div class="card">
+    <h3>Jadwal Latihan</h3>
+   <button class="btn btn-add" style="margin-top:15px; color: #d4af37;" onclick="toggleJadwalAdmin(true)">📅 Buka Jadwal</button>
+
+</div>
+
+<div class="modal" id="jadwalModal">
+    <div class="modal-content jadwal-popup">
+        <h2 style="margin-bottom:20px;">Jadwal Global</h2>
+        <div id="jadwalAdmin"></div>
+        <button class="btn btn-add" style="width:100%; margin-top:15px; color: #d4af37" onclick="simpanJadwalGlobal()">💾 Simpan Jadwal</button>
+        <button class="btn btn-delete" style="width:100%; margin-top:10px; " onclick="toggleJadwalAdmin(false)">Tutup</button>
+    </div>
+</div>
+
+<div class="modal" id="absensiModal">
+    <div class="modal-content jadwal-popup">
+        <h2 style="margin-bottom:20px;">✅ System Absensi Kehadiran</h2>
+        <div class="card" style="background:rgba(0,0,0,0.3); margin-bottom:15px; text-align:left; border-color:#5c3a21;">
+            <p>📅 Tanggal: <b id="absensi-tanggal">-</b></p>
+            <p>👥 Total Hadir: <b id="total-hadir">0</b> Siswa</p>
+        </div>
+        <div id="absensi-list" style="max-height:350px; overflow-y:auto; margin-bottom:20px;"></div>
+        <h2 style="margin-bottom:15px; color:#ffcc00;">🏆 Top 3 Kehadiran</h2>
+        <div id="ranking-kehadiran" style="background:rgba(0,0,0,0.3); border-radius:15px; padding:10px; border:1px solid #5c3a21;"></div>
+        <h2 style="margin-top:20px; margin-bottom:15px; color:#ef4444;">❌ Tidak Hadir Hari Ini</h2>
+        <div id="tidak-hadir-list" style="background:rgba(0,0,0,0.3); border-radius:15px; padding:10px; max-height:250px; overflow-y:auto;">Belum ada data</div>
+        <button class="btn btn-delete" style="width:100%; margin-top:15px;" onclick="toggleAbsensiPopup(false)">Tutup</button>
+    </div>
+</div>
+
+<div class="modal" id="bmiAppModal">
+    <div class="modal-content jadwal-popup">
+        <h2 style="margin-bottom:20px; color:#ffcc00;">Stopwatch</h2>
+        <div class="super-stopwatch">
+            <h3 class="sw-title">🥋 BMI TRAINING TIMER</h3>
+            <div class="stopwatch-ring">
+                <div id="stopwatchDisplay" class="sw-display">00:00:00</div>
+                <div class="sw-progress"><div id="progressBar"></div></div>
+            </div>
+            <div class="sw-buttons">
+                <button class="sw-btn start" onclick="startStopwatch()">▶ START</button>
+                <button class="sw-btn pause" onclick="pauseStopwatch()">⏸ PAUSE</button>
+                <button class="sw-btn reset" onclick="resetStopwatch()">⏹ RESET</button>
+                <button class="sw-btn lap" onclick="saveLap()">🏆 LAP</button>
+            </div>
+            <div class="round-box">
+                <div>🥊 ROUND <h2 id="roundText">1</h2></div>
+                <div>⏱ TARGET <input type="number" id="targetMinute" value="2" min="1" style="font-size:22px; font-weight:900; text-align:center;">
+                <p style="margin-top:6px; font-size:12px; opacity:.7;">Menit</p></div>
+            </div>
+            <div id="lapContainer" class="lap-container"><p style='opacity:.6'>Belum ada lap</p></div>
+        </div>
+        <div style="margin-top:20px;">
+            <button class="sw-btn reset" style="width:100%; padding:18px; font-size:16px; border-radius:20px;" onclick="toggleBMIApp(false)">❌ TUTUP STOPWATCH</button>
+        </div>
+    </div>
+</div>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Cari nama siswa..." onkeyup="loadData()">
+</div>
+
+<div class="stats">
+    <div class="card"><h3>Total</h3><div class="num" id="totalMember">0</div></div>
+    <div class="card"><h3>Lunas</h3><div class="num" id="totalLunas">0</div></div>
+    <div class="card belum-card" onclick="showBelumBayar()">
+        <h3>Belum</h3>
+        <div class="num" id="totalBelum">0</div>
+        <div class="lihat-text">Klik untuk melihat</div>
+    </div>
+    <div class="card"><h3>Pemasukan</h3><div class="num" id="pemasukan">Rp0</div></div>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Nama (Klik Riwayat)</th>
+                <th>Sabuk</th>
+                <th>No HP</th>
+                <th>Tgl Lahir</th>
+                <th>Fisik</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+</div>
+
+<div class="modal" id="studentModal">
+    <div class="modal-content">
+        <h2 id="modalTitle" style="color:#f3e5ab;">Tambah Member</h2>
+        <form id="studentForm">
+            <input type="hidden" id="student-id">
+            <label>Nama Lengkap</label><input type="text" id="form-nama" required>
+            <label>Username</label><input type="text" id="form-username" required>
+            <label>Password</label><input type="text" id="form-password" required>
+            <label>Nomor HP</label><input type="text" id="form-hp">
+            <label>Tanggal Lahir</label><input type="date" id="form-tgl">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1"><label>Berat (Kg)</label><input type="number" id="form-berat"></div>
+                <div style="flex:1"><label>Tinggi (Cm)</label><input type="number" id="form-tinggi"></div>
+            </div>
+            <label>Warna Sabuk</label>
+            <select id="form-sabuk">
+                <option>Putih</option><option>Kuning</option><option>Hijau</option>
+                <option>Biru</option><option>Merah</option><option>Hitam</option>
+            </select>
+            <label>Status Kas Mingguan</label>
+            <select id="form-status">
+                <option value="Belum Lunas">Belum Lunas</option>
+                <option value="Lunas">Lunas</option>
+            </select>
+            <button type="submit" class="btn btn-add" style="width:100%; margin-top:20px; background:#16a34a;">Simpan Data</button>
+            <button type="button" class="btn btn-delete" style="width:100%; margin-top:10px;" onclick="closeModal()">Batal</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="historyModal">
+    <div class="modal-content">
+        <h2 style="color:#f3e5ab;">Riwayat Pembayaran</h2>
+        <hr style="border-color:#5c3a21;"><br>
+        <div id="historyContent"></div>
+        <button class="btn btn-delete" style="width:100%; margin-top:20px;" onclick="closeHistory()">Tutup</button>
+    </div>
+</div>
+
+<div class="modal" id="belumBayarModal">
+    <div class="modal-content jadwal-popup">
+        <h2 style="margin-bottom:20px; color:#ef4444;">❌ Member Belum Bayar</h2>
+        <div id="belumBayarList" style="max-height:400px; overflow-y:auto;"></div>
+        <button class="btn btn-delete" style="width:100%; margin-top:20px;" onclick="toggleBelumModal(false)">Tutup</button>
+    </div>
+</div>
+
+<div class="footer">
+    <h2>Jika ada keluhan dengan aplikasi ini hubungi Bapaknya Tata</h2>
+    <p style="margin-top:5px;">BMI Taekwondo Academy Management System © 2026</p>
+</div>
+
+<script>
+// --- CONFIG FIREBASE ---
+const firebaseConfig = {
+    apiKey: "AIzaSyATIQKEoacfqd_P5mBn915gzwbsLQE-va8",
+    authDomain: "spp-unisri-taekwondo.firebaseapp.com",
+    projectId: "spp-unisri-taekwondo",
+    storageBucket: "spp-unisri-taekwondo.firebasestorage.app",
+    messagingSenderId: "888126318699",
+    appId: "1:888126318699:web:6e1ef3d5a49908c2b5692e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function getMingguKe() {
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+    const tanggal = now.getDate();
+    if (tanggal < 3) return 4;
+    if (tanggal >= 31) return 1;
+    return Math.floor((tanggal - 3) / 7) + 1;
+}
+
+function getMingguKey() {
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+    const tahun = now.getFullYear();
+    const bulan = now.getMonth() + 1;
+    const mingguKe = getMingguKe();
+    return `${tahun}-${bulan}-Minggu-${mingguKe}`;
+}
+
+// --- JAM REALTIME INDONESIA & JAWA ---
+setInterval(() => {
+    const now = new Date();
+    document.getElementById("clock-time").innerText = now.toLocaleTimeString("id-ID");
+    document.getElementById("clock-date").innerText = now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}, 1000);
+
+// --- LOAD DATA ---
+function loadData() {
+    const cari = document.getElementById("searchInput").value.toLowerCase();
+    const mingguNow = getMingguKey();
+    db.collection("siswa").onSnapshot(snapshot => {
+        let html = "";
+        let total = 0, lunas = 0, belum = 0;
+
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            if (!(d.nama || "").toLowerCase().includes(cari)) return;
+
+            total++;
+            const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+            const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
+            isLunas ? lunas++ : belum++;
+
+            let tombolPeringatan = "";
+            if (!isLunas) {
+                tombolPeringatan = `<button class="btn btn-caution" style="padding: 5px 10px;" onclick="peringatkan('${doc.id}')">⚠️</button>`;
             }
-        }, 8000);
-    </script>
+// --- FORMAT TANGGAL INDONESIA YANG RAPI ---
+let tglLahirIndo = "-";
+if (d.tanggal_lahir) {
+    const opsi = { day: 'numeric', month: 'short', year: 'numeric' }; // Menggunakan nama bulan pendek (Jan, Feb, Mei) agar hemat ruang di tabel
+    tglLahirIndo = new Date(d.tanggal_lahir).toLocaleDateString("id-ID", opsi);
+}
+
+html += `
+<tr>
+    <td onclick="lihatRiwayat('${doc.id}')" style="cursor:pointer; color:#60a5fa; font-weight:bold;">${d.nama || "-"}</td>
+    <td>${d.warna_sabuk || "-"}</td>
+    <td>${d.nomor_hp || "-"}</td>
+    <td style="color: #f3e5ab; white-space: nowrap;">📅 ${tglLahirIndo}</td>
+    <td>${d.berat_badan || 0}kg / ${d.tinggi_badan || 0}cm</td>
+    <td>
+        <span class="badge ${isLunas ? 'green' : 'red'}">${isLunas ? 'Lunas' : 'Belum'}</span>
+        ${punyaKuota ? `<div style="font-size:11px; opacity:0.7; margin-top:4px; color:#38bdf8;">Sisa: ${d.kuota_kas} Mgg</div>` : ''}
+    </td>
+    <td>
+        <button class="btn btn-pay" onclick="bayar('${doc.id}')" ${isLunas ? 'disabled style="opacity:0.5"' : ''}>Bayar</button>
+        <button class="btn" style="background-color: #eab308; color: #000; font-weight: bold;" onclick="koreksiKuotaManual('${doc.id}')">CELENGAN</button>
+        <button class="btn btn-edit" onclick="editData('${doc.id}')">Edit</button>
+        <button class="btn btn-delete" onclick="hapus('${doc.id}')">Hapus</button>
+        ${tombolPeringatan}
+    </td>
+</tr>`;
+
+        });
+
+        document.getElementById("table-body").innerHTML = html;
+        document.getElementById("totalMember").innerText = total;
+        document.getElementById("totalLunas").innerText = lunas;
+        document.getElementById("totalBelum").innerText = belum;
+        document.getElementById("pemasukan").innerText = "Rp" + (lunas * 5000).toLocaleString("id-ID");
+    });
+}
+
+function peringatkan(id) {
+    if (!confirm("Kirim peringatan ke member?")) return;
+    db.collection("siswa").doc(id).update({
+        peringatan: true,
+        peringatan_dilihat: false,
+        tanggal_peringatan: new Date().toISOString()
+    }).then(() => { alert("Peringatan berhasil dikirim!"); });
+}
+
+function bayar(id) {
+    const jumlahMingguInput = prompt("Mau bayar berapa minggu sekaligus?\n\nKetik angka minggu:", "1");
+    if (jumlahMingguInput === null) return; 
+
+    const jumlahMinggu = parseInt(jumlahMingguInput);
+    if (isNaN(jumlahMinggu) || jumlahMinggu <= 0) {
+        alert("Pembayaran dibatalkan.");
+        return;
+    }
+
+    const mingguIni = getMingguKey();
+    const ref = db.collection("siswa").doc(id);
+
+    ref.get().then(doc => {
+        const d = doc.data();
+        let riwayat = d.riwayat_kas || [];
+        let kuotaSekarang = parseInt(d.kuota_kas || 0) + jumlahMinggu;
+
+        const now = new Date();
+        const namaHari = now.toLocaleDateString("id-ID", { weekday: "long" });
+        const tanggalLengkap = now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+        const totalUang = jumlahMinggu * 5000;
+
+        let textRiwayat = `Bayar Kas (${jumlahMinggu} Minggu - Rp${totalUang.toLocaleString('id-ID')}) • ${namaHari}, ${tanggalLengkap}`;
+        riwayat.push(textRiwayat);
+        
+        ref.update({
+            minggu_bayar: mingguIni,
+            kuota_kas: kuotaSekarang,
+            status_pembayaran: "Lunas",
+            riwayat_kas: riwayat,
+            peringatan: false,
+            peringatan_dilihat: true
+        }).then(() => {
+            alert(`🎉 Berhasil mencatat pembayaran kas untuk ${jumlahMinggu} minggu!`);
+        });
+    });
+}
+
+function openAddModal() {
+    document.getElementById("studentForm").reset();
+    document.getElementById("student-id").value = "";
+    document.getElementById("modalTitle").innerText = "Tambah Member";
+    document.getElementById("studentModal").style.display = "block";
+}
+
+function closeModal() { document.getElementById("studentModal").style.display = "none"; }
+
+document.getElementById("studentForm").onsubmit = function(e) {
+    e.preventDefault();
+    const id = document.getElementById("student-id").value;
+    const status = document.getElementById("form-status").value;
+    const mingguNow = getMingguKey();
+
+    let data = {
+        nama: document.getElementById("form-nama").value,
+        username: document.getElementById("form-username").value,
+        password: document.getElementById("form-password").value,
+        nomor_hp: document.getElementById("form-hp").value,
+        tanggal_lahir: document.getElementById("form-tgl").value,
+        berat_badan: document.getElementById("form-berat").value,
+        tinggi_badan: document.getElementById("form-tinggi").value,
+        warna_sabuk: document.getElementById("form-sabuk").value
+    };
+
+    if (id) {
+        const ref = db.collection("siswa").doc(id);
+        ref.get().then(doc => {
+            let lama = doc.data();
+            let riwayat = lama.riwayat_kas || [];
+
+            if (status === "Belum Lunas") {
+                data.minggu_bayar = "";
+                data.kuota_kas = 0;
+                const now = new Date();
+                riwayat.push(`⚠️ Koreksi Admin: Diubah ke Belum Lunas (${now.toLocaleDateString("id-ID")})`);
+                data.riwayat_kas = riwayat;
+            } else {
+                data.kuota_kas = parseInt(lama.kuota_kas || 0);
+                if (data.kuota_kas === 0) data.kuota_kas = 1;
+                data.minggu_bayar = mingguNow;
+            }
+
+            ref.update(data).then(() => { loadData(); closeModal(); });
+        });
+    } else {
+        if (status === "Lunas") {
+            data.minggu_bayar = mingguNow;
+            data.kuota_kas = 1;
+        } else {
+            data.minggu_bayar = "";
+            data.kuota_kas = 0;
+        }
+        db.collection("siswa").add(data).then(() => { loadData(); closeModal(); });
+    }
+};
+
+function editData(id) {
+    db.collection("siswa").doc(id).get().then(doc => {
+        const d = doc.data();
+        const mingguNow = getMingguKey();
+        
+        document.getElementById("student-id").value = id;
+        document.getElementById("form-nama").value = d.nama || "";
+        document.getElementById("form-username").value = d.username || "";
+        document.getElementById("form-password").value = d.password || "";
+        document.getElementById("form-hp").value = d.nomor_hp || "";
+        document.getElementById("form-tgl").value = d.tanggal_lahir || "";
+        document.getElementById("form-berat").value = d.berat_badan || "";
+        document.getElementById("form-tinggi").value = d.tinggi_badan || "";
+        document.getElementById("form-sabuk").value = d.warna_sabuk || "Putih";
+        
+        const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+        const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
+        document.getElementById("form-status").value = isLunas ? "Lunas" : "Belum Lunas";
+        
+        document.getElementById("modalTitle").innerText = "Edit Member";
+        document.getElementById("studentModal").style.display = "block";
+    });
+}
+
+function hapus(id) {
+    if (confirm("Ingin Menendang Anak ini?")) db.collection("siswa").doc(id).delete();
+}
+
+function lihatRiwayat(id) {
+    db.collection("siswa").doc(id).get().then(doc => {
+        const riwayat = doc.data().riwayat_kas || [];
+        let html = riwayat.length ? "" : "<p style='color:black;'>Belum ada riwayat.</p>";
+        riwayat.sort().reverse().forEach(b => {
+            html += `<div style="padding:10px; margin:5px 0; background:#f3f4f6; border-radius:8px; color:#111; font-weight:bold;">✅ ${b}</div>`;
+        });
+        document.getElementById("historyContent").innerHTML = html;
+        document.getElementById("historyModal").style.display = "block";
+    });
+}
+
+function closeHistory() { document.getElementById("historyModal").style.display = "none"; }
+
+function exportExcel(){
+    db.collection("siswa").get().then(snapshot=>{
+        const mingguNow = getMingguKey();
+        let rows = [["BMI TAEKWONDO ACADEMY"], ["Management Member System"], [], ["NO","NAMA","USERNAME","PASSWORD","NO HP","TANGGAL LAHIR","BERAT","TINGGI","SABUK","STATUS","RIWAYAT"]];
+        let no = 1;
+        snapshot.forEach(doc=>{
+            const d = doc.data();
+            const status = d.minggu_bayar === mingguNow ? "LUNAS" : "BELUM";
+            rows.push([no++, d.nama || "-", d.username || "-", d.password || "-", d.nomor_hp || "-", d.tanggal_lahir || "-", (d.berat_badan || 0), (d.tinggi_badan || 0), d.warna_sabuk || "-", status, (d.riwayat_kas || []).join(", ")]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "DATA MEMBER BMI");
+        XLSX.writeFile(wb, "DATA_MEMBER_BMI.xlsx");
+    });
+}
+
+function toggleJadwalAdmin(show){ document.getElementById("jadwalModal").style.display = show ? "block" : "none"; }
+function toggleAbsensiPopup(show){ document.getElementById("absensiModal").style.display = show ? "block" : "none"; if(show){ loadAbsensi(); } }
+
+loadData();
+
+// --- JADWAL SYSTEM ---
+const hariList = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
+
+function renderAdminJadwal(data = {}){
+    let html = "";
+    hariList.forEach(hari=>{
+        html += `<div class="schedule-admin-card"><div class="schedule-admin-title">${hari.toUpperCase()}</div><div id="wrap-${hari}"></div><button class="btn btn-session" onclick="tambahSession('${hari}')">+ Tambah Session</button></div>`;
+    });
+    document.getElementById("jadwalAdmin").innerHTML = html;
+    hariList.forEach(hari=>{
+        const sessions = data[hari] || [];
+        if(sessions.length === 0) { tambahSession(hari); }
+        else { sessions.forEach(s=> tambahSession(hari, s.jam, s.type)); }
+    });
+}
+
+function tambahSession(hari, jam="", type="pagi"){
+    const id = Date.now() + Math.random();
+    const html = `<div class="session-item" id="${id}"><div class="session-grid"><div><label>Jam</label><input type="time" class="jam-input" value="${jam}"></div><div><label>Type</label><select class="type-input"><option value="pagi" ${type==="pagi"?"selected":""}>Pagi</option><option value="siang" ${type==="siang"?"selected":""}>Siang</option><option value="sore" ${type==="sore"?"selected":""}>Sore</option><option value="malam" ${type==="malam"?"selected":""}>Malam</option></select></div></div><button class="btn btn-delete" style="margin-top:10px;" onclick="document.getElementById('${id}').remove()">Hapus</button></div>`;
+    document.getElementById(`wrap-${hari}`).insertAdjacentHTML("beforeend", html);
+}
+
+function simpanJadwalGlobal(){
+    const result = {};
+    hariList.forEach(hari=>{
+        const wrap = document.getElementById(`wrap-${hari}`);
+        const items = wrap.querySelectorAll(".session-item");
+        result[hari] = [];
+        items.forEach(item=>{
+            const jam = item.querySelector(".jam-input").value;
+            const type = item.querySelector(".type-input").value;
+            if(jam) result[hari].push({jam, type});
+        });
+    });
+    db.collection("jadwal").doc("global").set(result).then(()=> alert("🔥 Jadwal tersimpan!"));
+}
+
+db.collection("jadwal").doc("global").onSnapshot(doc=>{
+    if(doc.exists) renderAdminJadwal(doc.data());
+    else renderAdminJadwal();
+});
+
+function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+function getMonthKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}`; }
+
+async function loadAbsensi() {
+    const today = getTodayKey();
+    const listContainer = document.getElementById("absensi-list");
+    const tidakHadirContainer = document.getElementById("tidak-hadir-list");
+    listContainer.innerHTML = "<p style='color:gray;'>Memuat daftar siswa...</p>";
+    document.getElementById("absensi-tanggal").innerText = new Date().toLocaleDateString("id-ID");
+
+    try {
+        const siswaSnapshot = await db.collection("siswa").get();
+        const absenDoc = await db.collection("absensi").doc(today).get();
+        const absenData = absenDoc.exists ? (absenDoc.data().hadir || []) : [];
+
+        let html = "";
+        let tidakHadirHTML = "";
+        let countHadir = 0;
+
+        siswaSnapshot.forEach(doc => {
+            const s = doc.data();
+            const idSiswa = doc.id;
+            const isChecked = absenData.includes(idSiswa);
+
+            if(isChecked){
+                countHadir++;
+            }else{
+                tidakHadirHTML += `<div style="padding:10px; margin-bottom:8px; background:rgba(239,68,68,0.15); border-radius:10px; border:1px solid rgba(239,68,68,0.2); color:white; font-weight:bold;">❌ ${s.nama || 'Tanpa Nama'}</div>`;
+            }
+
+            html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); margin-bottom:5px; border-radius:8px;"><span style="font-size:14px; color:white;">${s.nama || 'Tanpa Nama'}</span><input type="checkbox" style="width:22px; height:22px; cursor:pointer;" ${isChecked ? 'checked' : ''} onchange="toggleAbsen('${idSiswa}', this.checked)"></div>`;
+        });
+
+        listContainer.innerHTML = html;
+        document.getElementById("total-hadir").innerText = countHadir;
+        tidakHadirContainer.innerHTML = tidakHadirHTML || `<div style="padding:10px; background:rgba(34,197,94,0.15); border-radius:10px; color:white; font-weight:bold;">✅ Semua siswa hadir hari ini</div>`;
+        updateRanking();
+    } catch(error){
+        listContainer.innerHTML = "<p style='color:red;'>Gagal memuat data.</p>";
+    }
+}
+
+async function toggleAbsen(siswaId, isChecked) {
+    const today = getTodayKey();
+    const ref = db.collection("absensi").doc(today);
+    try {
+        if (isChecked) {
+            await ref.set({ hadir: firebase.firestore.FieldValue.arrayUnion(siswaId) }, { merge: true });
+        } else {
+            await ref.update({ hadir: firebase.firestore.FieldValue.arrayRemove(siswaId) });
+        }
+        loadAbsensi();
+    } catch (e) { console.error(e); }
+}
+
+async function updateRanking() {
+    const month = getMonthKey();
+    const snapshot = await db.collection("absensi").get();
+    const stats = {};
+
+    snapshot.forEach(doc => {
+        if (doc.id.startsWith(month)) {
+            const hadir = doc.data().hadir || [];
+            hadir.forEach(id => { stats[id] = (stats[id] || 0) + 1; });
+        }
+    });
+
+    const siswaSnap = await db.collection("siswa").get();
+    const rankData = [];
+    siswaSnap.forEach(doc => {
+        if (stats[doc.id]) { rankData.push({ nama: doc.data().nama, count: stats[doc.id] }); }
+    });
+
+    rankData.sort((a, b) => b.count - a.count);
+    const top3 = rankData.slice(0, 3);
+
+    let html = "";
+    top3.forEach((r, i) => {
+        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+        html += `<div style="padding:5px; border-bottom:1px solid rgba(255,255,255,0.05)">${medal} ${r.nama} (${r.count}x)</div>`;
+    });
+    document.getElementById("ranking-kehadiran").innerHTML = html || "Belum ada data bulan ini";
+}
+
+function toggleBMIApp(show){ document.getElementById("bmiAppModal").style.display = show ? "block" : "none"; }
+
+// --- STOPWATCH SYSTEM ---
+let stopwatchInterval;
+let elapsed = 0;
+let running = false;
+let lapCount = 1;
+let round = 1;
+let targetTime = 120000;
+let nextRoundTarget = 120000;
+
+function formatTime(ms){
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    const centiseconds = Math.floor((ms % 1000) / 10);
+    return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${String(centiseconds).padStart(2,'0')}`;
+}
+
+function updateDisplay(){
+    document.getElementById("stopwatchDisplay").innerText = formatTime(elapsed);
+    const currentRoundTime = elapsed % targetTime;
+    const percent = Math.min((currentRoundTime / targetTime) * 100, 100);
+    document.getElementById("progressBar").style.width = percent + "%";
+
+    if(elapsed >= nextRoundTarget){
+        playBeep();
+        round++;
+        document.getElementById("roundText").innerText = round;
+        nextRoundTarget = round * targetTime;
+    }
+}
+
+function startStopwatch(){
+    if(running) return;
+    const menit = parseInt(document.getElementById("targetMinute").value) || 1;
+    targetTime = menit * 60000;
+    nextRoundTarget = (round * targetTime);
+    running = true;
+    const start = Date.now() - elapsed;
+    stopwatchInterval = setInterval(()=>{ elapsed = Date.now() - start; updateDisplay(); },10);
+}
+
+function pauseStopwatch(){ running = false; clearInterval(stopwatchInterval); }
+
+function resetStopwatch(){
+    running = false; clearInterval(stopwatchInterval);
+    elapsed = 0; lapCount = 1; round = 1; nextRoundTarget = targetTime;
+    document.getElementById("roundText").innerText = "1";
+    document.getElementById("progressBar").style.width = "0%";
+    document.getElementById("lapContainer").innerHTML = "<p style='opacity:.6'>Belum ada lap</p>";
+    document.getElementById("stopwatchDisplay").innerText = "00:00:00";
+}
+
+function saveLap(){
+    const lap = document.createElement("div");
+    lap.className = "lap-item";
+    lap.innerHTML = `<span>🏆 LAP ${lapCount}</span><span>${formatTime(elapsed)}</span>`;
+    document.getElementById("lapContainer").prepend(lap);
+    lapCount++;
+}
+
+function playBeep(){
+    const ctx = new(window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    osc.type = "sine"; osc.frequency.value = 800; osc.connect(ctx.destination);
+    osc.start(); setTimeout(()=>{ osc.stop(); },300);
+}
+
+function toggleBelumModal(show){ document.getElementById("belumBayarModal").style.display = show ? "block" : "none"; }
+
+async function showBelumBayar(){
+    toggleBelumModal(true);
+    const list = document.getElementById("belumBayarList");
+    list.innerHTML = "<p>Memuat data...</p>";
+    const mingguNow = getMingguKey();
+    const snapshot = await db.collection("siswa").get();
+    let html = "";
+
+    snapshot.forEach(doc=>{
+        const d = doc.data();
+        const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+        const belumBayar = (d.minggu_bayar !== mingguNow) && !punyaKuota;
+
+        if(belumBayar){
+            // Mengubah format tanggal lahir dari YYYY-MM-DD menjadi format Indonesia yang rapi (Contoh: 17 Mei 2010)
+            let tanggalLahirFormatted = "-";
+            if (d.tanggal_lahir) {
+                const opsiTanggal = { day: 'numeric', month: 'long', year: 'numeric' };
+                tanggalLahirFormatted = new Date(d.tanggal_lahir).toLocaleDateString("id-ID", opsiTanggal);
+            }
+
+            html += `
+            <div style="padding:14px; margin-bottom:10px; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.2); border-radius:14px;">
+                <div style="font-size:16px; font-weight:800; color:white;">${d.nama || "-"}</div>
+                <div style="margin-top:5px; font-size:13px; opacity:.7;">🥋 Sabuk: ${d.warna_sabuk || "-"}</div>
+                <div style="margin-top:5px; font-size:13px; opacity:.7;">📱 No. HP: ${d.nomor_hp || "-"}</div>
+                <div style="margin-top:5px; font-size:13px; opacity:.9; color: #f3e5ab;">📅 Tgl Lahir: ${tanggalLahirFormatted}</div>
+            </div>`;
+        }
+    });
+
+    list.innerHTML = html || `<div style="padding:15px; background:rgba(34,197,94,.15); border-radius:14px; font-weight:bold;">✅ Semua member sudah bayar</div>`;
+}
+
+
+async function prosesPotongKuotaMingguan() {
+    if (!confirm("Apakah Anda ingin menyinkronkan data untuk minggu baru?")) return;
+    const snapshot = await db.collection("siswa").get();
+    let totalDipotong = 0;
+    const batch = db.batch();
+    
+    snapshot.forEach(doc => {
+        const d = doc.data();
+        const kuota = parseInt(d.kuota_kas || 0);
+        if (kuota > 0) {
+            batch.update(db.collection("siswa").doc(doc.id), { kuota_kas: kuota - 1 });
+            totalDipotong++;
+        }
+    });
+    await batch.commit();
+    alert(`⚡ Sukses memotong kuota ${totalDipotong} member.`);
+    loadData();
+}
+
+async function tombolResetManualBulan() {
+    if (!confirm("⚠️ HAPUS SEMUA DATA BULANAN?")) return;
+    const pengetikan = prompt("Ketik kata 'SETUJU':");
+    if (pengetikan !== "SETUJU") return;
+
+    const snapshot = await db.collection("siswa").get();
+    const batch = db.batch();
+    snapshot.forEach(doc => {
+        batch.update(db.collection("siswa").doc(doc.id), {
+            riwayat_kas: [], pembayaran: [], kuota_kas: 0, minggu_bayar: "", status_pembayaran: "Belum Lunas"
+        });
+    });
+    await batch.commit();
+    alert("🎉 Data dibersihkan!");
+    loadData();
+}
+
+function koreksiKuotaManual(id) {
+    const ref = db.collection("siswa").doc(id);
+    ref.get().then(doc => {
+        if (!doc.exists) return;
+        const d = doc.data();
+        const kuotaSekarang = parseInt(d.kuota_kas || 0);
+        const inputKuotaBaru = prompt(`Koreksi kuota ${d.nama}:`, kuotaSekarang);
+        if (inputKuotaBaru === null) return;
+        
+        const kuotaBaru = parseInt(inputKuotaBaru);
+        let riwayat = d.riwayat_kas || [];
+        riwayat.push(`✏️ Kuota dikoreksi ke ${kuotaBaru} Minggu.`);
+        
+        ref.update({
+            kuota_kas: kuotaBaru,
+            riwayat_kas: riwayat,
+            minggu_bayar: kuotaBaru > 0 ? getMingguKey() : ""
+        }).then(() => { loadData(); });
+    });
+}
+</script>
 </body>
 </html>
