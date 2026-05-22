@@ -3,2754 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMI Taekwondo Academy - Admin Dashboard</title>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+    <title>BMI Academy - System Maintenance & Upgrade</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Marcellus&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
-            min-height: 100vh;
-            padding: 15px;
-            color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0d0601;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden; /* Mengunci geser kanan-kiri saja agar tidak melar */
+    overflow-y: auto;   /* Mengizinkan geser atas-bawah jika layar HP sempit */
+    position: relative;
+    padding: 40px 20px; /* Menambah jarak atas-bawah agar tidak terlalu mepet */
+}
+
+
+        /* Background Animasi Keraton Masa Depan */
+        .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(44, 26, 4, 0.6) 0%, rgba(13, 6, 1, 0.95) 100%),
+                url('https://www.transparenttextures.com/patterns/black-thread-light.png');
+            z-index: 1;
         }
 
-        /* HEADER & CARDS */
-        .header {
-            background: rgba(255,255,255,.10);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,.15);
-            border-radius: 22px;
-            padding: 22px;
-            margin-bottom: 20px;
+        /* Partikel Cahaya Emas Bergerak */
+        .particles {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
         }
-        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .brand-wrap{
 
-    display:flex;
-    align-items:center;
-    gap:16px;
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(214, 175, 55, 0.8) 0%, rgba(214, 175, 55, 0) 70%);
+            border-radius: 50%;
+            animation: floatUp 8s infinite linear;
+            opacity: 0.3;
+        }
 
-}
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
 
-.logo-box{
+        /* Kontainer Utama */
+        .maintenance-container {
+            position: relative;
+            z-index: 10;
+            max-width: 650px;
+            width: 100%;
+            background: linear-gradient(135deg, rgba(44, 26, 4, 0.75), rgba(19, 10, 1, 0.9));
+            border: 2px solid #d4af37;
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                inset 0 0 30px rgba(214, 175, 55, 0.15);
+            backdrop-filter: blur(10px);
+            animation: containerPulse 4s infinite alternate;
+        }
 
-    width:75px;
-    height:75px;
+        @keyframes containerPulse {
+            0% { box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(214, 175, 55, 0.15); border-color: #d4af37; }
+            100% { box-shadow: 0 20px 60px rgba(214, 175, 55, 0.1), inset 0 0 40px rgba(214, 175, 55, 0.25); border-color: #ffea9f; }
+        }
 
-    border-radius:22px;
+        /* Efek Ornamen Sudut Klasik Keraton */
+        .ornament {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #d4af37;
+            opacity: 0.7;
+        }
+        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+        .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+        .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
 
-    overflow:hidden;
+        /* Logo / Icon Sektor Upgrade Hologram */
+        .icon-box {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    background:
-    rgba(255,255,255,.08);
+        .hologram-ring {
+            position: absolute;
+            inset: 0;
+            border: 2px dashed #d4af37;
+            border-radius: 50%;
+            animation: rotateRing 12s linear infinite;
+        }
 
-    padding:6px;
+        .hologram-ring-inner {
+            position: absolute;
+            inset: 12px;
+            border: 1px solid rgba(243, 229, 171, 0.4);
+            border-radius: 50%;
+            border-top: 2px solid #ffcc00;
+            animation: rotateRingRev 6s linear infinite;
+        }
 
-    box-shadow:
-    0 6px 18px rgba(0,0,0,.25);
+        @keyframes rotateRing { 100% { transform: rotate(360deg); } }
+        @keyframes rotateRingRev { 100% { transform: rotate(-360deg); } }
 
-    flex-shrink:0;
-}
+        .main-icon {
+            font-size: 50px;
+            animation: floatIcon 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px #ffcc00);
+        }
 
-.logo-box img{
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
 
-    width:100%;
-    height:100%;
+        /* Teks Judul & Deskripsi */
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(24px, 5vw, 36px);
+            color: #f3e5ab;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(214, 175, 55, 0.5);
+            margin-bottom: 5px;
+        }
 
-    object-fit:cover;
+        h2 {
+            font-family: 'Marcellus', serif;
+            font-size: 16px;
+            color: #d4af37;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
 
-    border-radius:18px;
-}
+        .status-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #784807, #301c01);
+            border: 1px solid #d4af37;
+            color: #ffcc00;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(120, 72, 7, 0.4);
+            margin-bottom: 25px;
+        }
 
-.brand-text h1{
+        p.desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e2ecd8;
+            opacity: 0.85;
+            margin-bottom: 30px;
+        }
 
-    font-size:clamp(20px,4vw,34px);
+        /* Progress Bar Canggih */
+        .progress-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #5c3a21;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
 
-    font-weight:900;
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: bold;
+            color: #f3e5ab;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
 
-    letter-spacing:1px;
+        .progress-bar-track {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(214, 175, 55, 0.2);
+            position: relative;
+        }
 
-    line-height:1.1;
-}
+        .progress-bar-fill {
+            width: 78%; /* Angka progress */
+            height: 100%;
+            background: linear-gradient(90deg, #4a2f13, #d4af37, #ffcc00);
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ffcc00;
+            position: relative;
+            animation: shimmer 2s infinite linear;
+            background-size: 200% 100%;
+        }
 
-.brand-text p{
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
 
-    margin-top:6px;
+        /* Log Sistem Realtime Ghaib/Canggih */
+        .system-logs {
+            background: #0d0601;
+            border-left: 3px solid #d4af37;
+            padding: 12px 15px;
+            border-radius: 0 12px 12px 0;
+            text-align: left;
+            font-family: monospace;
+            font-size: 11px;
+            color: #a7f3d0;
+            height: 55px;
+            overflow: hidden;
+            position: relative;
+        }
 
-    font-size:14px;
+        .log-line {
+            animation: scanLines 4s infinite linear;
+        }
 
-    opacity:.8;
+        @keyframes scanLines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-40px); }
+        }
 
-    color:#cbd5e1;
-}
+        /* Footer Hubungi Bapaknya Tata */
+        .footer-info {
+            font-size: 11px;
+            opacity: 0.6;
+            color: #bfa37a;
+            border-top: 1px dashed rgba(92, 58, 33, 0.5);
+            padding-top: 20px;
+        }
 
-/* RESPONSIVE */
-
-@media(max-width:700px){
-
-.brand-wrap{
-
-    width:100%;
-}
-
-.logo-box{
-
-    width:60px;
-    height:60px;
-}
-
-.brand-text h1{
-
-    font-size:22px;
-}
-
-.brand-text p{
-
-    font-size:13px;
-}
-
+        .footer-info b {
+            color: #ffcc00;
+        }
+        .logo{
+width:88px;
+height:88px;
+padding:8px;
+border-radius:24px;
+object-fit:contain;
+background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.03));
+border:1px solid rgba(255,255,255,.08);
+box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 25px rgba(59,130,246,.18);
+transition:.4s;
 }
         
-        .clock-box {
-            background: #000; color: #39ff14; padding: 10px 20px;
-            border-radius: 16px; font-family: monospace; text-align: center;
-            box-shadow: 0 0 10px rgba(57,255,20,0.3);
-        }
-
-        .actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-       .actions{
-    margin-top:20px;
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(170px,1fr));
-
-    gap:14px;
-
-    width:100%;
-}
-
-.actions .btn{
-
-    position:relative;
-
-    overflow:hidden;
-
-    border:none;
-
-    min-height:68px;
-
-    border-radius:24px;
-
-    font-size:15px;
-
-    font-weight:900;
-
-    letter-spacing:.8px;
-
-    color:white;
-
-    text-shadow:
-
-    0 1px 0 rgba(255,255,255,.20),
-
-    0 2px 0 rgba(0,0,0,.15),
-
-    0 4px 8px rgba(0,0,0,.35);
-
-    background:
-    linear-gradient(
-    180deg,
-    rgba(255,255,255,.22) 0%,
-    rgba(255,255,255,.08) 35%,
-    rgba(0,0,0,.12) 100%
-    );
-
-    backdrop-filter:blur(12px);
-
-    border:
-    1px solid rgba(255,255,255,.15);
-
-    box-shadow:
-
-    inset 0 2px 4px rgba(255,255,255,.18),
-
-    inset 0 -4px 8px rgba(0,0,0,.18),
-
-    0 10px 20px rgba(0,0,0,.28),
-
-    0 2px 5px rgba(255,255,255,.08);
-
-    transition:
-    transform .2s,
-    box-shadow .2s;
-}
-.actions .btn::after{
-
-    content:"";
-
-    position:absolute;
-
-    top:4px;
-    left:6%;
-
-    width:88%;
-    height:45%;
-
-    border-radius:20px;
-
-    background:
-    linear-gradient(
-    to bottom,
-    rgba(255,255,255,.35),
-    rgba(255,255,255,0)
-    );
-
-    pointer-events:none;
-}
-.actions .btn:hover{
-
-    transform:
-    translateY(-3px)
-    scale(1.02);
-
-    box-shadow:
-
-    inset 0 2px 4px rgba(255,255,255,.18),
-
-    inset 0 -4px 8px rgba(0,0,0,.18),
-
-    0 14px 28px rgba(0,0,0,.35),
-
-    0 4px 10px rgba(255,255,255,.08);
-}
-.actions .btn:hover{
-    transform:translateY(-2px);
-}
-
-.actions .btn{
-text-shadow:
-
-0 1px 0 rgba(255,255,255,.20),
-
-0 2px 0 rgba(0,0,0,.15),
-
-0 3px 6px rgba(0,0,0,.35),
-
-0 0 10px rgba(255,255,255,.12);
-letter-spacing:.8px;position:relative;
-
-    overflow:hidden;
-
-    border:none;
-
-    min-height:68px;
-
-    border-radius:22px;
-
-    font-size:15px;
-
-    font-weight:900;
-
-    letter-spacing:.5px;
-
-    color:white;
-
-    backdrop-filter:blur(12px);
-
-    background:
-    linear-gradient(
-    135deg,
-    rgba(255,255,255,.18),
-    rgba(255,255,255,.05)
-    );
-
-    border:
-    1px solid rgba(255,255,255,.12);
-
-    box-shadow:
-    0 8px 24px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.08);
-
-    transition:
-    transform .25s,
-    box-shadow .25s,
-    background .25s;
-}
-
-/* EFEK CAHAYA */
-
-.actions .btn::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-    left:-120%;
-
-    width:80%;
-    height:100%;
-
-    background:
-    linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,.25),
-    transparent
-    );
-
-    transform:skewX(-25deg);
-
-    transition:.7s;
-}
-.actions .bmi-btn{
-
-    background:
-    linear-gradient(
-    135deg,
-    #f59e0b,
-    #ea580c
-    );
-}
-.actions .btn:hover::before{
-
-    left:130%;
-}
-
-/* HOVER */
-
-.actions .btn:hover{
-
-    transform:
-    translateY(-4px)
-    scale(1.02);
-
-    box-shadow:
-    0 12px 28px rgba(0,0,0,.35);
-}
-
-/* WARNA KHUSUS */
-
-.actions .btn-export{
-
-    background:
-    linear-gradient(
-    135deg,
-    #7c3aed,
-    #4f46e5
-    );
-}
-
-.actions .btn-add{
-
-    background:
-    linear-gradient(
-    135deg,
-    #16a34a,
-    #22c55e
-    );
-}
-
-/* HEADER RESPONSIVE */
-
-@media(max-width:700px){
-
-.header-top{
-    flex-direction:column;
-    align-items:flex-start;
-}
-
-.clock-box{
-    width:100%;
-}
-
-.actions{
-    flex-direction:column;
-}
-
-.actions .btn{
-    width:100%;
-}
-}
-        
-        /* BUTTONS */
-        .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #fff; transition: .2s; font-size: 13px; }
-        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
-        .btn-add { background: #22c55e; }
-        .btn-export { background: #8b5cf6; }
-        .btn-edit { background: #3b82f6; }
-        .btn-pay { background: #14b8a6; }
-        .btn-delete { background: #ef4444; }
-        .btn-caution { background: #f59e0b; color: #000; }
-
-        /* SEARCH & STATS */
-        .search-box input { width: 100%; padding: 12px; border-radius: 12px; border: none; margin: 15px 0; }
-       .stats {
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(150px,1fr));
-
-    gap:14px;
-
-    margin-top:10px;
-
-    margin-bottom:20px;
-}
-       .card{
-         margin-top:15px;
-
-    position:relative;
-
-    overflow:hidden;
-
-    padding:18px;
-
-    border-radius:24px;
-
-    text-align:center;
-
-    backdrop-filter:blur(14px);
-
-    background:
-    linear-gradient(
-    145deg,
-    rgba(255,255,255,.10),
-    rgba(255,255,255,.03)
-    );
-
-    border:
-    1px solid rgba(255,255,255,.08);
-
-    box-shadow:
-
-    0 10px 25px rgba(0,0,0,.30),
-
-    inset 0 1px 0 rgba(255,255,255,.08);
-
-    transition:.35s;
-}
-.belum-card{
-cursor:pointer;
-transition:.3s;
-}
-
-.belum-card:hover{
-
-transform:
-translateY(-5px)
-scale(1.03);
-
-box-shadow:
-0 10px 25px rgba(239,68,68,.35);
-
-}
-
-.lihat-text{
-
-margin-top:10px;
-
-font-size:12px;
-
-opacity:.7;
-
-font-weight:700;
-
-letter-spacing:1px;
-
-}
-
-/* MATAHARI JEPANG */
-
-.card::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:140px;
-    height:140px;
-
-    border-radius:50%;
-
-    background:
-    radial-gradient(
-    circle,
-    rgba(239,68,68,.28),
-    transparent 70%
-    );
-
-    top:-40px;
-    right:-40px;
-}
-
-/* GARIS JEPANG */
-
-.card::after{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-    repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 14px,
-    rgba(255,255,255,.025) 15px
-    );
-
-    pointer-events:none;
-}
-
-/* HOVER */
-
-.card:hover{
-
-    transform:
-    translateY(-5px)
-    scale(1.02);
-
-    box-shadow:
-
-    0 16px 30px rgba(0,0,0,.35),
-
-    0 0 20px rgba(239,68,68,.15);
-}
-        .card .num { font-size: 24px; font-weight: 800; margin-top: 5px; }
-        /* CARD STATS */
-
-.stats .card{
-
-    position:relative;
-
-    overflow:hidden;
-
-    padding:22px;
-
-    border-radius:28px;
-
-    backdrop-filter:blur(16px);
-
-    background:
-    linear-gradient(
-    145deg,
-    rgba(255,255,255,.18),
-    rgba(255,255,255,.05)
-    );
-
-    border:
-    1px solid rgba(255,255,255,.10);
-
-    /* EFEK CEMBUNG */
-    box-shadow:
-
-    inset 0 2px 3px rgba(255,255,255,.35),
-
-    inset 0 -3px 6px rgba(0,0,0,.25),
-
-    -8px -8px 18px rgba(255,255,255,.04),
-
-    10px 10px 25px rgba(0,0,0,.35),
-
-    0 15px 30px rgba(0,0,0,.28);
-
-    transition:.35s;
-}
-
-.stats .card:hover{
-
-    transform:
-    translateY(-6px)
-    scale(1.03);
-
-    box-shadow:
-
-    inset 0 2px 4px rgba(255,255,255,.40),
-
-    inset 0 -4px 8px rgba(0,0,0,.28),
-
-    -10px -10px 22px rgba(255,255,255,.05),
-
-    14px 14px 30px rgba(0,0,0,.40),
-
-    0 18px 35px rgba(0,0,0,.35);
-}
-.stats .card::after{
-
-    content:"";
-
-    position:absolute;
-
-    top:6px;
-    left:8%;
-
-    width:84%;
-    height:40%;
-
-    border-radius:20px;
-
-    background:
-    linear-gradient(
-    to bottom,
-    rgba(255,255,255,.30),
-    rgba(255,255,255,0)
-    );
-
-    pointer-events:none;
-}
-
-/* JUDUL */
-
-.stats .card h3{
-
-    position:relative;
-
-    z-index:2;
-
-    font-size:15px;
-
-    font-weight:800;
-
-    letter-spacing:2px;
-
-    color:#f8fafc;
-
-    text-transform:uppercase;
-
-    text-shadow:
-    0 2px 8px rgba(0,0,0,.4);
-}
-
-.card .num{
-
-    position:relative;
-
-    z-index:2;
-
-    font-size:32px;
-
-    font-weight:1000;
-
-    margin-top:10px;
-
-    color:white;
-
-    text-shadow:
-
-    0 3px 10px rgba(0,0,0,.4),
-
-    0 0 15px rgba(239,68,68,.25);
-
-    animation:
-    japaneseFloat 3s ease-in-out infinite;
-}
-
-@keyframes japaneseFloat{
-
-    0%{
-        transform:translateY(0px);
-    }
-
-    50%{
-        transform:translateY(-4px);
-    }
-
-    100%{
-        transform:translateY(0px);
-    }
-}
-
-/* ANGKA MENGAMBANG */
-
-.stats .card .num{
-
-    font-size:30px;
-
-    font-weight:900;
-
-    margin-top:5px;
-
-    color:white;
-
-    text-shadow:
-
-    0 2px 0 rgba(255,255,255,.15),
-
-    0 6px 14px rgba(0,0,0,.45),
-
-    0 0 16px rgba(255,255,255,.15);
-
-    animation:
-    floatingText 3s ease-in-out infinite;
-}
-
-/* ANIMASI */
-
-@keyframes floatingText{
-
-    0%{
-        transform:translateY(0px);
-    }
-
-    50%{
-        transform:translateY(-4px);
-    }
-
-    100%{
-        transform:translateY(0px);
-    }
-}
-.stats .card::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:-50%;
-    left:-60%;
-
-    width:80%;
-    height:200%;
-
-    background:
-    linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,.08),
-    transparent
-    );
-
-    transform:rotate(25deg);
-
-    animation:
-    shineMove 5s linear infinite;
-}
-
-@keyframes shineMove{
-
-    from{
-        left:-80%;
-    }
-
-    to{
-        left:140%;
-    }
-}
-
-        /* TABLE */
-        .table-wrap { overflow-x: auto; background: rgba(255,255,255,0.05); border-radius: 15px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: rgba(255,255,255,0.1); padding: 12px; text-align: left; font-size: 14px; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; 
-          vertical-align:middle;
-          font-weight:600;
-        }
-        .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; }
-        .green { background: #16a34a; }
-        .red { background: #dc2626; }
-
-        /* MODAL */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
-        .modal-content { background: white; color: #333; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
-        .modal-content label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; }
-        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; }
-
-        .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 12px; }
-        .schedule-admin-card{
-
-background:rgba(255,255,255,.08);
-
-padding:18px;
-
-border-radius:18px;
-
-margin-bottom:18px;
-
-border:1px solid rgba(255,255,255,.08);
-
-}
-
-.schedule-admin-title{
-
-font-size:20px;
-font-weight:900;
-
-margin-bottom:15px;
-
-color:#60a5fa;
-
-}
-
-.session-item{
-
-background:rgba(0,0,0,.25);
-
-padding:12px;
-
-border-radius:14px;
-
-margin-bottom:12px;
-
-}
-
-.session-grid{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:10px;
-
-margin-top:10px;
-
-}
-
-.btn-session{
-
-margin-top:10px;
-
-background:#2563eb;
-
-}
-/* POPUP JADWAL ADMIN */
-
-.jadwal-popup{
-
-max-width:700px;
-
-background:#0f172a;
-
-color:white;
-
-border:1px solid rgba(255,255,255,.08);
-
-}
-
-.jadwal-popup label{
-
-color:white;
-
-}
-
-.jadwal-popup input,
-.jadwal-popup select{
-
-background:rgba(255,255,255,.05);
-
-border:1px solid rgba(255,255,255,.08);
-
-color:white;
-
-}
-
-.jadwal-popup option{
-
-color:black;
-
-}
-/* =========================
-SUPER STOPWATCH
-========================= */
-
-.super-stopwatch{
-
-background:rgba(255,255,255,.05);
-
-border-radius:30px;
-
-padding:25px;
-
-border:1px solid rgba(255,255,255,.08);
-
-backdrop-filter:blur(20px);
-
-}
-
-.sw-title{
-
-text-align:center;
-
-font-size:24px;
-
-font-weight:900;
-
-margin-bottom:25px;
-
-color:#22c55e;
-
-letter-spacing:2px;
-
-}
-
-.stopwatch-ring{
-  display:flex;
-flex-direction:column;
-align-items:center;
-overflow:hidden;
-background:radial-gradient(circle,#111827,#020617);
-
-padding:30px;
-
-border-radius:30px;
-
-box-shadow:
-0 0 40px rgba(34,197,94,.3),
-inset 0 0 30px rgba(255,255,255,.05);
-
-}
-
-.sw-display{
-
-font-size:clamp(38px, 9vw, 58px);
-
-width:100%;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-text-align:center;
-
-font-family:monospace;
-
-font-weight:900;
-
-letter-spacing:2px;
-
-line-height:1;
-
-padding:10px 0;
-
-color:#22c55e;
-
-text-shadow:
-0 0 10px #22c55e,
-0 0 20px #22c55e,
-0 0 40px #22c55e;
-
-animation:pulse 1s infinite alternate;
-
-overflow:visible;
-
-}
-
-@keyframes pulse{
-
-from{
-transform:scale(1);
-}
-
-to{
-transform:scale(1.03);
-}
-
-}
-
-.sw-progress{
-
-width:100%;
-
-height:10px;
-
-background:rgba(255,255,255,.08);
-
-border-radius:999px;
-
-overflow:hidden;
-
-margin-top:25px;
-
-}
-
-#progressBar{
-
-width:0%;
-
-height:100%;
-
-background:linear-gradient(90deg,#22c55e,#3b82f6);
-
-transition:.1s;
-
-}
-
-.sw-buttons{
-
-display:grid;
-
-grid-template-columns:repeat(2,1fr);
-
-gap:12px;
-
-margin-top:20px;
-
-}
-
-.sw-btn{
-
-border:none;
-
-padding:15px;
-
-border-radius:18px;
-
-font-weight:900;
-
-font-size:15px;
-
-cursor:pointer;
-
-transition:.2s;
-
-color:white;
-
-}
-
-.sw-btn:hover{
-
-transform:translateY(-3px) scale(1.03);
-
-}
-
-.start{
-background:#22c55e;
-}
-
-.pause{
-background:#f59e0b;
-}
-
-.reset{
-background:#ef4444;
-}
-
-.lap{
-background:#3b82f6;
-}
-
-.round-box{
-
-display:flex;
-
-justify-content:space-between;
-
-margin-top:25px;
-
-gap:10px;
-
-}
-
-.round-box div{
-
-flex:1;
-
-background:rgba(255,255,255,.05);
-
-padding:15px;
-
-border-radius:20px;
-
-text-align:center;
-
-}
-
-.round-box h2{
-
-margin-top:8px;
-
-font-size:28px;
-
-}
-
-.lap-container{
-
-margin-top:20px;
-
-max-height:200px;
-
-overflow-y:auto;
-
-}
-
-.lap-item{
-
-background:rgba(255,255,255,.05);
-
-padding:12px;
-
-border-radius:14px;
-
-margin-bottom:10px;
-
-display:flex;
-
-justify-content:space-between;
-
-font-weight:bold;
-
-}
-.brand-text{
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    line-height:1;
-}
-
-.brand-text h1{
-
-    font-size:clamp(28px,5vw,42px);
-
-    font-weight:1000;
-
-    letter-spacing:3px;
-
-    color:white;
-
-    text-shadow:
-
-    0 3px 10px rgba(0,0,0,.35),
-
-    0 0 12px rgba(255,255,255,.12);
-
-    margin:0;
-}
-
-.brand-text h2{
-
-    margin-top:6px;
-
-    font-size:clamp(14px,2vw,20px);
-
-    font-weight:800;
-
-    letter-spacing:2px;
-
-    color:#cbd5e1;
-
-    text-shadow:
-    0 2px 6px rgba(0,0,0,.35);
-}
-
-.brand-text{
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    line-height:1;
-
-    text-align:center;
-}
     </style>
 </head>
 <body>
-<div class="header-top">
 
-    <div class="brand-wrap">
+    <div class="bg-overlay"></div>
+    
+    <div class="particles" id="particle-container"></div>
 
-        <div class="logo-box">
+    <div class="maintenance-container">
+        <div class="ornament top-left"></div>
+        <div class="ornament top-right"></div>
+        <div class="ornament bottom-left"></div>
+        <div class="ornament bottom-right"></div>
 
-            <img
-            src="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png"
-            alt="BMI Logo">
-
+        <div class="icon-box">
+            <div class="hologram-ring"></div>
+            <div class="hologram-ring-inner"></div>
+            <img src="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png" class="logo">
         </div>
 
-       <div class="brand-text">
-
-    <h1>BMI</h1>
-
-    <h2>TAEKWONDO ACADEMY</h2>
-
-    <p>admin paling asik sedunia 😎</p>
-
-</div>
-
-    </div>
-
-    <div class="clock-box">
-        <div id="clock-time">00:00:00</div>
-        <div id="clock-date">Loading...</div>
-    </div>
-
-</div>
-<div class="actions">
-
-<button
-class="btn btn-export"
-onclick="toggleAbsensiPopup(true)">
-✅ Buka Absensi
-</button>
-
-<button
-class="btn btn-export"
-onclick="exportExcel()">
-📄 Export Excel
-</button>
-
-<button
-class="btn bmi-btn"
-onclick="toggleBMIApp(true)">
-Stopwatch
-</button>
-
-<button
-class="btn btn-add"
-onclick="openAddModal()">
-➕ Tambah Member
-</button>
-<button
-class="btn btn-caution"
-style="color: white; font-weight: 900;"
-onclick="prosesPotongKuotaMingguan()">
-🔄 Sinkronisasi Minggu Baru
-</button>
-
-<button class="btn btn-danger" onclick="tombolResetManualBulan()" style="background-color: #ef4444; font-weight: bold; border-radius: 12px; padding: 10px 20px;">💥 Reset Total Bulanan</button>
-
-
-</div>
-<div class="card">
-
-<h3>Jadwal Latihan</h3>
-
-<button
-class="btn btn-add"
-style="margin-top:15px;"
-onclick="toggleJadwalAdmin(true)">
-
-📅 Buka Jadwal
-
-</button>
-
-</div>
-
-<div
-class="modal"
-id="jadwalModal">
-
-<div class="modal-content jadwal-popup">
-
-<h2 style="margin-bottom:20px;">
-Jadwal Global
-</h2>
-
-<div id="jadwalAdmin"></div>
-
-<button
-class="btn btn-add"
-style="width:100%; margin-top:15px;"
-onclick="simpanJadwalGlobal()">
-
-💾 Simpan Jadwal
-
-</button>
-
-<button
-class="btn btn-delete"
-style="width:100%; margin-top:10px;"
-onclick="toggleJadwalAdmin(false)">
-
-Tutup
-
-</button>
-
-</div>
-
-</div>
-
-<!-- POPUP ABSENSI -->
-<div
-class="modal"
-id="absensiModal">
-
-<div class="modal-content jadwal-popup">
-
-<h2 style="margin-bottom:20px;">
-✅ System Absensi Kehadiran
-</h2>
-
-<div class="card"
-style="background:rgba(255,255,255,0.05);
-margin-bottom:15px;
-text-align:left;">
-
-<p>📅 Tanggal:
-<b id="absensi-tanggal">-</b></p>
-
-<p>👥 Total Hadir:
-<b id="total-hadir">0</b> Siswa</p>
-
-</div>
-
-<div
-id="absensi-list"
-style="
-max-height:350px;
-overflow-y:auto;
-margin-bottom:20px;
-">
-</div>
-
-<h2
-style="
-margin-bottom:15px;
-color:#f59e0b;
-">
-
-🏆 Top 3 Kehadiran
-
-</h2>
-
-<div
-id="ranking-kehadiran"
-style="
-background:rgba(255,255,255,0.05);
-border-radius:15px;
-padding:10px;
-">
-</div>
-<h2
-style="
-margin-top:20px;
-margin-bottom:15px;
-color:#ef4444;
-">
-
-❌ Tidak Hadir Hari Ini
-
-</h2>
-
-<div
-id="tidak-hadir-list"
-style="
-background:rgba(255,255,255,0.05);
-border-radius:15px;
-padding:10px;
-max-height:250px;
-overflow-y:auto;
-">
-Belum ada data
-</div>
-<button
-class="btn btn-delete"
-style="width:100%; margin-top:15px;"
-onclick="toggleAbsensiPopup(false)">
-
-Tutup
-
-</button>
-
-</div>
-
-</div>
-<!-- BMI APP POPUP -->
-<div
-class="modal"
-id="bmiAppModal">
-
-<div
-class="modal-content jadwal-popup">
-
-<h2
-style="
-margin-bottom:20px;
-color:#f59e0b;
-">
-
-Stopwatch
-
-</h2>
-
-<!-- SUPER STOPWATCH -->
-
-<div class="super-stopwatch">
-
-<h3 class="sw-title">
-🥋 BMI TRAINING TIMER
-</h3>
-
-<div class="stopwatch-ring">
-
-<div id="stopwatchDisplay" class="sw-display">
-00:00:00
-</div>
-
-<div class="sw-progress">
-<div id="progressBar"></div>
-</div>
-
-</div>
-
-<div class="sw-buttons">
-
-<button
-class="sw-btn start"
-onclick="startStopwatch()">
-
-▶ START
-
-</button>
-
-<button
-class="sw-btn pause"
-onclick="pauseStopwatch()">
-
-⏸ PAUSE
-
-</button>
-
-<button
-class="sw-btn reset"
-onclick="resetStopwatch()">
-
-⏹ RESET
-
-</button>
-
-<button
-class="sw-btn lap"
-onclick="saveLap()">
-
-🏆 LAP
-
-</button>
-
-</div>
-
-<div class="round-box">
-
-<div>
-🥊 ROUND
-<h2 id="roundText">1</h2>
-</div>
-
-<div>
-⏱ TARGET
-
-<input
-type="number"
-id="targetMinute"
-value="2"
-min="1"
-
-style="
-width:100%;
-margin-top:10px;
-padding:10px;
-border:none;
-border-radius:12px;
-font-size:22px;
-font-weight:900;
-text-align:center;
-background:rgba(255,255,255,.08);
-color:white;
-">
-
-<p style="
-margin-top:6px;
-font-size:12px;
-opacity:.7;
-">
-
-Menit
-
-</p>
-
-</div>
-</div>
-
-<div id="lapContainer" class="lap-container">
-
-<p style="opacity:.6">
-Belum ada lap
-</p>
-</div>
-</div>
-<div style="margin-top:20px;">
-
-<button
-class="sw-btn reset"
-style="
-width:100%;
-padding:18px;
-font-size:16px;
-border-radius:20px;
-"
-
-onclick="toggleBMIApp(false)">
-
-❌ TUTIP  STOPWATCH
-</button>
-
-</div>
-</div>
-
-</div>
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="Cari nama siswa..." onkeyup="loadData()">
-</div>
-
-<div class="stats">
-    <div class="card"><h3>Total</h3><div class="num" id="totalMember">0</div></div>
-    <div class="card"><h3>Lunas</h3><div class="num" id="totalLunas">0</div></div>
-    <div class="card belum-card" onclick="showBelumBayar()">
-<h3>Belum</h3>
-<div class="num" id="totalBelum">0</div>
-
-<div class="lihat-text">
-Klik untuk melihat
-</div>
-</div>
-    <div class="card"><h3>Pemasukan</h3><div class="num" id="pemasukan">Rp0</div></div>
-</div>
-
-<div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>Nama (Klik Riwayat)</th>
-                <th>Sabuk</th>
-                <th>No HP</th>
-                <th>Fisik</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-    </table>
-</div>
-
-<div class="modal" id="studentModal">
-    <div class="modal-content">
-        <h2 id="modalTitle">Tambah Member</h2>
-        <form id="studentForm">
-            <input type="hidden" id="student-id">
-            <label>Nama Lengkap</label><input type="text" id="form-nama" required>
-            <label>Username</label><input type="text" id="form-username" required>
-            <label>Password</label><input type="text" id="form-password" required>
-            <label>Nomor HP</label><input type="text" id="form-hp">
-            <label>Tanggal Lahir</label><input type="date" id="form-tgl">
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1"><label>Berat (Kg)</label><input type="number" id="form-berat"></div>
-                <div style="flex:1"><label>Tinggi (Cm)</label><input type="number" id="form-tinggi"></div>
+        <div class="status-badge">⚡ SYSTEM UPGRADE IN PROGRESS</div>
+
+        <h1>BMI ACADEMY</h1>
+        <h2>Aplikasi Sedang dalam perbaikan</h2>
+
+        <p class="desc">
+            Mohon maaf, sistem management sedang dalam proses perbaikan agar supaya tidak berat dan cepet, aman, dan nyaman saat di gunakan..
+        </p>
+
+        <div class="progress-box">
+            <div class="progress-info">
+                <span>⚡ PROSES OPTIMALISASI DATABASE</span>
+                <span id="progress-percent">68%</span>
             </div>
-            <label>Warna Sabuk</label>
-            <select id="form-sabuk">
-                <option>Putih</option><option>Kuning</option><option>Hijau</option>
-                <option>Biru</option><option>Merah</option><option>Hitam</option>
-            </select>
-           <label>Status Kas Mingguan</label>
-            <select id="form-status">
-                <option value="Belum Lunas">Belum Lunas</option>
-                <option value="Lunas">Lunas</option>
-            </select>
-            <button type="submit" class="btn btn-add" style="width:100%; margin-top:20px;">Simpan Data</button>
-            <button type="button" class="btn btn-delete" style="width:100%; margin-top:10px;" onclick="closeModal()">Batal</button>
-        </form>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="system-logs">
+            <div class="log-line">
+                [SYSTEM] Refactoring Server Core Architecture...<br>
+                [CORE] Synchronizing SPP & Celengan Matrix Database...<br>
+                [SECURITY] Injecting Keraton Cryptography Layer Security...<br>
+                [SUCCESS] Optimization Complete. Ready to Launch Soon ...<br>
+                [SUCCESS] Optimization Complete. Ready to Launch Soon.
+            </div>
+        </div>
+
+        <div class="footer-info" style="margin-top: 25px;">
+            Jika ada keluhan hubungi <b>Bapakne Tata yang ngeyelan</b>.
+        </div>
     </div>
-</div>
 
-<div class="modal" id="historyModal">
-    <div class="modal-content">
-        <h2>Riwayat Pembayaran</h2>
-        <hr><br>
-        <div id="historyContent"></div>
-        <button class="btn btn-delete" style="width:100%; margin-top:20px;" onclick="closeHistory()">Tutup</button>
-    </div>
-</div>
-
-<div class="footer">
-    <h2>Jika ada keluhan dengan aplikasi ini hubungi Bapaknya Tata</h2>
-
-    BMI Taekwondo Academy Management System © 2026
-</div>
-<!-- MODAL BELUM BAYAR -->
-
-<div
-class="modal"
-id="belumBayarModal">
-
-<div
-class="modal-content jadwal-popup">
-
-<h2
-style="
-margin-bottom:20px;
-color:#ef4444;
-">
-
-❌ Member Belum Bayar
-
-</h2>
-
-<div
-id="belumBayarList"
-
-style="
-max-height:400px;
-overflow-y:auto;
-">
-
-</div>
-
-<button
-class="btn btn-delete"
-style="
-width:100%;
-margin-top:20px;
-"
-
-onclick="toggleBelumModal(false)">
-
-Tutup
-
-</button>
-
-</div>
-
-</div>
-<script>
-// --- CONFIG FIREBASE ---
-const firebaseConfig = {
-    apiKey: "AIzaSyATIQKEoacfqd_P5mBn915gzwbsLQE-va8",
-    authDomain: "spp-unisri-taekwondo.firebaseapp.com",
-    projectId: "spp-unisri-taekwondo",
-    storageBucket: "spp-unisri-taekwondo.firebasestorage.app",
-    messagingSenderId: "888126318699",
-    appId: "1:888126318699:web:6e1ef3d5a49908c2b5692e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-function getMingguKe() {
-    const now = new Date(
-        new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Jakarta"
-        })
-    );
-
-    const tanggal = now.getDate();
-
-    if (tanggal < 3) return 4;
-    if (tanggal >= 31) return 1;
-
-    return Math.floor((tanggal - 3) / 7) + 1;
-}
-
-function getMingguKey() {
-    const now = new Date(
-        new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Jakarta"
-        })
-    );
-
-    const tahun = now.getFullYear();
-    const bulan = now.getMonth() + 1;
-    const mingguKe = getMingguKe();
-
-    return `${tahun}-${bulan}-Minggu-${mingguKe}`;
-}
-function getCurrentWeekNumber() {
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), 0, 1);
-    const days = Math.floor((now - firstDay) / (24 * 60 * 60 * 1000));
-
-    return Math.ceil((days + firstDay.getDay() + 1) / 7);
-}
-
-// --- JAM REALTIME ---
-setInterval(() => {
-    const now = new Date();
-    document.getElementById("clock-time").innerText = now.toLocaleTimeString("id-ID");
-    document.getElementById("clock-date").innerText = now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-}, 1000);
-
-// --- LOAD DATA (DENGAN LOGIKA TOMBOL PERINGATAN BARU) ---
-function loadData() {
-    const cari = document.getElementById("searchInput").value.toLowerCase();
-    const mingguNow = getMingguKey();
-    db.collection("siswa").onSnapshot(snapshot => {
-        let html = "";
-        let total = 0, lunas = 0, belum = 0;
-
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            if (!(d.nama || "").toLowerCase().includes(cari)) return;
-
-            total++;
+    <script>
+        // Membuat partikel emas mengalir secara acak di latar belakang
+        const container = document.getElementById('particle-container');
+        const particleCount = 25;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
             
-           // 1. Cek Status Lunas (Berdasarkan minggu ini ATAU masih punya kuota deposit)
-const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
-const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
-isLunas ? lunas++ : belum++;
-
-
-           let tombolPeringatan = "";
-// Jika member belum lunas, tampilkan tombol peringatan
-if (!isLunas) {
-    tombolPeringatan =
-        `<button class="btn btn-caution"
-        onclick="peringatkan('${doc.id}')">⚠️</button>`;
-}
-
-const mingguSekarang =
-Math.ceil(new Date().getDate() / 7);
-
-let mingguBayar = 0;
-
-if (d.minggu_bayar) {
-
-    const match =
-    d.minggu_bayar.match(/Minggu-(\d+)/);
-
-    mingguBayar =
-    match ? parseInt(match[1]) : 0;
-}
-
-const hariIni = new Date().getDay(); // Senin = 1
-const hariSenin = hariIni === 1;
-
-const belumBayarMingguIni = mingguBayar < mingguSekarang;
-
-if (hariSenin && belumBayarMingguIni) {
-
-    const sedangDiperingatkan = d.peringatan === true;
-    const sudahDilihat = d.peringatan_dilihat === true;
-
-    // tombol muncul hanya jika belum diperingatkan
-    if (!sedangDiperingatkan && !sudahDilihat) {
-
-        tombolPeringatan =
-        `<button class="btn btn-caution"
-        onclick="peringatkan('${doc.id}')">⚠️</button>`;
-    }
-}
-
-            html += `
-            <tr>
-                <td onclick="lihatRiwayat('${doc.id}')" style="cursor:pointer; color:#60a5fa; font-weight:bold;">${d.nama || "-"}</td>
-                <td>${d.warna_sabuk || "-"}</td>
-                <td>${d.nomor_hp || "-"}</td>
-                <td>${d.berat_badan || 0}kg / ${d.tinggi_badan || 0}cm</td>
-                <td>
-    <span class="badge ${isLunas ? 'green' : 'red'}">${isLunas ? 'Lunas' : 'Belum'}</span>
-    ${punyaKuota ? `<div style="font-size:11px; opacity:0.7; margin-top:4px; color:#38bdf8;">Sisa: ${d.kuota_kas} Mgg</div>` : ''}
-</td>
-                <td>
-                    <button class="btn btn-pay" onclick="bayar('${doc.id}')" ${isLunas ? 'disabled style="opacity:0.5"' : ''}>Bayar</button>
-<button class="btn" style="background-color: #eab308; color: #000; font-weight: bold; padding: 10px 16px; font-size: 13px; border-radius: 10px; border: none; cursor: pointer;" onclick="koreksiKuotaManual('${doc.id}')">✏️ Kuota</button>
-<button class="btn btn-edit" onclick="editData('${doc.id}')">Edit</button>
-<button class="btn btn-delete" onclick="hapus('${doc.id}')">Hapus</button>
-
-                    ${tombolPeringatan}
-                </td>
-            </tr>`;
-        });
-
-        document.getElementById("table-body").innerHTML = html;
-        document.getElementById("totalMember").innerText = total;
-        document.getElementById("totalLunas").innerText = lunas;
-        document.getElementById("totalBelum").innerText = belum;
-        document.getElementById("pemasukan").innerText = "Rp" + (lunas * 5000).toLocaleString("id-ID");
-    });
-}
-
-// --- FUNGSI PERINGATKAN (UPDATE) ---
-function peringatkan(id) {
-
-    if (!confirm("Kirim peringatan ke member?")) return;
-
-    db.collection("siswa").doc(id).update({
-
-        peringatan: true,
-        peringatan_dilihat: false,
-        tanggal_peringatan: new Date().toISOString()
-
-    }).then(() => {
-
-        alert("Peringatan berhasil dikirim!");
-
-    });
-}
-// --- FUNGSI BAYAR MULTI-MINGGU (SUPER BRILIAN) ---
-function bayar(id) {
-    // Beri pilihan pop-up kepada admin mau input berapa minggu
-    const jumlahMingguInput = prompt("Mau bayar berapa minggu sekaligus?\n\nKetik angka minggu (Contoh: 1, 4, atau 20):", "1");
-    
-    // Validasi input dari pembatalan prompt
-    if (jumlahMingguInput === null) return; 
-
-    const jumlahMinggu = parseInt(jumlahMingguInput);
-    if (isNaN(jumlahMinggu) || jumlahMinggu <= 0) {
-        alert("Pembayaran dibatalkan. Input jumlah minggu tidak valid.");
-        return;
-    }
-
-    const mingguIni = getMingguKey();
-    const ref = db.collection("siswa").doc(id);
-
-    ref.get().then(doc => {
-        const d = doc.data();
-        let riwayat = d.riwayat_kas || [];
-        
-        // Ambil kuota kas lama (jika ada), lalu jumlahkan dengan kuota baru
-        let kuotaSekarang = parseInt(d.kuota_kas || 0);
-        kuotaSekarang += jumlahMinggu;
-
-        const now = new Date();
-        const namaHari = now.toLocaleDateString("id-ID", { weekday: "long" });
-        const tanggalLengkap = now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
-        const totalUang = jumlahMinggu * 5000;
-
-        // Teks catatan riwayat kas agar admin tidak bingung
-        let textRiwayat = "";
-        if (jumlahMinggu >= 20) {
-            textRiwayat = `🔥 BORONGAN KAS (${jumlahMinggu} Minggu - Rp${totalUang.toLocaleString('id-ID')}) • ${namaHari}, ${tanggalLengkap}`;
-        } else {
-            textRiwayat = `Bayar Kas (${jumlahMinggu} Minggu - Rp${totalUang.toLocaleString('id-ID')}) • ${namaHari}, ${tanggalLengkap}`;
-        }
-        
-        riwayat.push(textRiwayat);
-        
-        // Update ke Firebase Firestore
-        ref.update({
-            minggu_bayar: mingguIni,      // Kunci minggu ini lunas
-            kuota_kas: kuotaSekarang,     // Simpan sisa deposit kuota minggunya
-            status_pembayaran: "Lunas",
-            status_kewajiban: "Lunas",
-            status_kas_mingguan: "Lunas",
-            status_kas: "Lunas",
-            riwayat_kas: riwayat,
-            peringatan: false,
-            peringatan_dilihat: true
-        }).then(() => {
-            alert(`🎉 Berhasil mencatat pembayaran kas untuk ${jumlahMinggu} minggu (Total: Rp${totalUang.toLocaleString('id-ID')})!`);
-        });
-    });
-}
-
-
-// --- FUNGSI LAINNYA (TIDAK BERUBAH) ---
-function openAddModal() {
-    document.getElementById("studentForm").reset();
-    document.getElementById("student-id").value = "";
-    document.getElementById("modalTitle").innerText = "Tambah Member";
-    document.getElementById("studentModal").style.display = "block";
-}
-
-function closeModal() { document.getElementById("studentModal").style.display = "none"; }
-
-document.getElementById("studentForm").onsubmit = function(e) {
-    e.preventDefault();
-    const id = document.getElementById("student-id").value;
-    const status = document.getElementById("form-status").value;
-    const mingguNow = getMingguKey();
-
-    let data = {
-        nama: document.getElementById("form-nama").value,
-        username: document.getElementById("form-username").value,
-        password: document.getElementById("form-password").value,
-        nomor_hp: document.getElementById("form-hp").value,
-        tanggal_lahir: document.getElementById("form-tgl").value,
-        berat_badan: document.getElementById("form-berat").value,
-        tinggi_badan: document.getElementById("form-tinggi").value,
-        warna_sabuk: document.getElementById("form-sabuk").value
-    };
-
-    if (id) {
-        const ref = db.collection("siswa").doc(id);
-
-        ref.get().then(doc => {
-            let lama = doc.data();
-            let riwayat = lama.riwayat_kas || [];
-
-            if (status === "Belum Lunas") {
-                data.minggu_bayar = "";
-                data.kuota_kas = 0;
-                data.status_kas_mingguan = "Belum Lunas";
-                data.status_pembayaran = "Belum Lunas";
-                data.status_kas = "Belum Lunas";
-
-                const now = new Date();
-                const waktuKoreksi = now.toLocaleDateString("id-ID") + " " + now.toLocaleTimeString("id-ID");
-                riwayat.push(`⚠️ Koreksi data oleh Admin: Status diubah ke Belum Lunas (${waktuKoreksi})`);
-                data.riwayat_kas = riwayat;
-                
-                let pembayaran = lama.pembayaran || [];
-                pembayaran = pembayaran.filter(function(p){
-                    return p.key !== mingguNow;
-                });
-                data.pembayaran = pembayaran;
-            } else {
-                data.kuota_kas = parseInt(lama.kuota_kas || 0);
-                if (data.kuota_kas === 0) {
-                    data.kuota_kas = 1;
-                }
-                data.status_kas_mingguan = "Lunas";
-                data.status_pembayaran = "Lunas";
-                data.status_kas = "Lunas";
-                data.minggu_bayar = mingguNow;
-            }
-
-            ref.update(data).then(() => {
-                loadData();
-                closeModal();
-            });
-        });
-    } else {
-        // Jika menambah member baru dari nol
-        if (status === "Lunas") {
-            data.minggu_bayar = mingguNow;
-            data.kuota_kas = 1;
-            data.status_kas_mingguan = "Lunas";
-            data.status_pembayaran = "Lunas";
-            data.status_kas = "Lunas";
-        } else {
-            data.minggu_bayar = "";
-            data.kuota_kas = 0;
-            data.status_kas_mingguan = "Belum Lunas";
-            data.status_pembayaran = "Belum Lunas";
-            data.status_kas = "Belum Lunas";
-        }
-        db.collection("siswa").add(data).then(() => {
-            loadData();
-            closeModal();
-        });
-    }
-};
-
-
-function editData(id) {
-    db.collection("siswa").doc(id).get().then(doc => {
-        const d = doc.data();
-        const mingguNow = getMingguKey(); // Samakan penentu key minggunya
-        
-        document.getElementById("student-id").value = id;
-        document.getElementById("form-nama").value = d.nama || "";
-        document.getElementById("form-username").value = d.username || "";
-        document.getElementById("form-password").value = d.password || "";
-        document.getElementById("form-hp").value = d.nomor_hp || "";
-        document.getElementById("form-tgl").value = d.tanggal_lahir || "";
-        document.getElementById("form-berat").value = d.berat_badan || "";
-        document.getElementById("form-tinggi").value = d.tinggi_badan || "";
-        document.getElementById("form-sabuk").value = d.warna_sabuk || "Putih";
-        
-        // LOGIKA AMAN: Jika minggu_bayar cocok ATAU masih punya kuota_kas, tampilkan sebagai "Lunas" di dropdown
-        const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
-        const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
-        
-        document.getElementById("form-status").value = isLunas ? "Lunas" : "Belum Lunas";
-        
-        document.getElementById("modalTitle").innerText = "Edit Member";
-        document.getElementById("studentModal").style.display = "block";
-    });
-}
-
-
-function hapus(id) {
-    if (confirm("Ingin Menendang Anak ini?")) db.collection("siswa").doc(id).delete();
-}
-
-function lihatRiwayat(id) {
-    db.collection("siswa").doc(id).get().then(doc => {
-        const riwayat = doc.data().riwayat_kas || [];
-        let html = riwayat.length ? "" : "<p>Belum ada riwayat.</p>";
-        riwayat.sort().reverse().forEach(b => {
-
-    html += `
-    <div style="
-    padding:10px;
-    margin:5px 0;
-    background:#f3f4f6;
-    border-radius:8px;
-    color:#111;
-    font-weight:bold;
-    ">
-    ✅ ${b}
-    </div>`;
-});
-        document.getElementById("historyContent").innerHTML = html;
-        document.getElementById("historyModal").style.display = "block";
-    });
-}
-
-function closeHistory() { document.getElementById("historyModal").style.display = "none"; }
-
-function exportExcel(){
-    db.collection("siswa").get().then(snapshot=>{
-      const mingguNow = getMingguKey();
-        const bulanNow = new Date().toISOString().slice(0,7);
-        let rows = [["BMI TAEKWONDO ACADEMY"], ["Management Member System"], [], ["NO","NAMA","USERNAME","PASSWORD","NO HP","TANGGAL LAHIR","BERAT","TINGGI","SABUK","STATUS","RIWAYAT"]];
-        let no = 1;
-        snapshot.forEach(doc=>{
-            const d = doc.data();
-            const status = d.minggu_bayar === mingguNow ? "LUNAS" : "BELUM";
-            rows.push([no++, d.nama || "-", d.username || "-", d.password || "-", d.nomor_hp || "-", d.tanggal_lahir || "-", (d.berat_badan || 0), (d.tinggi_badan || 0), d.warna_sabuk || "-", status, (d.riwayat_kas || []).join(", ")]);
-        });
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "DATA MEMBER BMI");
-        XLSX.writeFile(wb, "DATA_MEMBER_BMI.xlsx");
-    });
-}
-
-function toggleJadwalAdmin(show){
-    document.getElementById("jadwalModal").style.display =
-    show ? "block" : "none";
-}
-
-function toggleAbsensiPopup(show){
-    document.getElementById("absensiModal").style.display =
-    show ? "block" : "none";
-
-    if(show){
-        loadAbsensi();
-    }
-}
-
-
-loadData();
-
-// --- JADWAL SYSTEM ---
-const hariList = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
-
-function renderAdminJadwal(data = {}){
-    let html = "";
-    hariList.forEach(hari=>{
-        html += `<div class="schedule-admin-card"><div class="schedule-admin-title">${hari.toUpperCase()}</div><div id="wrap-${hari}"></div><button class="btn btn-session" onclick="tambahSession('${hari}')">+ Tambah Session</button></div>`;
-    });
-    document.getElementById("jadwalAdmin").innerHTML = html;
-    hariList.forEach(hari=>{
-        const sessions = data[hari] || [];
-        if(sessions.length === 0) { tambahSession(hari); }
-        else { sessions.forEach(s=> tambahSession(hari, s.jam, s.type)); }
-    });
-}
-
-function tambahSession(hari, jam="", type="pagi"){
-    const id = Date.now() + Math.random();
-    const html = `<div class="session-item" id="${id}"><div class="session-grid"><div><label>Jam</label><input type="time" class="jam-input" value="${jam}"></div><div><label>Type</label><select class="type-input"><option value="pagi" ${type==="pagi"?"selected":""}>Pagi</option><option value="siang" ${type==="siang"?"selected":""}>Siang</option><option value="sore" ${type==="sore"?"selected":""}>Sore</option><option value="malam" ${type==="malam"?"selected":""}>Malam</option></select></div></div><button class="btn btn-delete" style="margin-top:10px;" onclick="document.getElementById('${id}').remove()">Hapus</button></div>`;
-    document.getElementById(`wrap-${hari}`).insertAdjacentHTML("beforeend", html);
-}
-
-function simpanJadwalGlobal(){
-    const result = {};
-    hariList.forEach(hari=>{
-        const wrap = document.getElementById(`wrap-${hari}`);
-        const items = wrap.querySelectorAll(".session-item");
-        result[hari] = [];
-        items.forEach(item=>{
-            const jam = item.querySelector(".jam-input").value;
-            const type = item.querySelector(".type-input").value;
-            if(jam) result[hari].push({jam, type});
-        });
-    });
-    db.collection("jadwal").doc("global").set(result).then(()=> alert("🔥 Jadwal tersimpan!"));
-}
-
-db.collection("jadwal").doc("global").onSnapshot(doc=>{
-    if(doc.exists) renderAdminJadwal(doc.data());
-    else renderAdminJadwal();
-});
-async function loadAbsensi() {
-
-    const today = getTodayKey();
-
-    const listContainer =
-    document.getElementById("absensi-list");
-
-    const tidakHadirContainer =
-    document.getElementById("tidak-hadir-list");
-
-    listContainer.innerHTML =
-    "<p style='color:gray;'>Memuat daftar siswa...</p>";
-
-    document.getElementById("absensi-tanggal").innerText =
-    new Date().toLocaleDateString("id-ID");
-
-    try {
-
-        // Ambil semua siswa
-        const siswaSnapshot =
-        await db.collection("siswa").get();
-
-        // Ambil absensi hari ini
-        const absenDoc =
-        await db.collection("absensi")
-        .doc(today)
-        .get();
-
-        const absenData =
-        absenDoc.exists
-        ? (absenDoc.data().hadir || [])
-        : [];
-
-        let html = "";
-
-        let tidakHadirHTML = "";
-
-        let countHadir = 0;
-
-        siswaSnapshot.forEach(doc => {
-
-            const s = doc.data();
-
-            const idSiswa = doc.id;
-
-            const isChecked =
-            absenData.includes(idSiswa);
-
-            // HITUNG HADIR
-            if(isChecked){
-                countHadir++;
-            }else{
-
-                // MASUKKAN KE LIST TIDAK HADIR
-                tidakHadirHTML += `
-                <div style="
-                padding:10px;
-                margin-bottom:8px;
-                background:rgba(239,68,68,0.15);
-                border-radius:10px;
-                border:1px solid rgba(239,68,68,0.2);
-                color:white;
-                font-weight:bold;
-                ">
-                    ❌ ${s.nama || 'Tanpa Nama'}
-                </div>`;
-            }
-
-            // LIST ABSENSI
-            html += `
-            <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:12px;
-            border-bottom:1px solid rgba(255,255,255,0.1);
-            background:rgba(255,255,255,0.02);
-            margin-bottom:5px;
-            border-radius:8px;
-            ">
-
-                <span style="
-                font-size:14px;
-                color:white;
-                ">
-                    ${s.nama || 'Tanpa Nama'}
-                </span>
-
-                <input
-                type="checkbox"
-
-                style="
-                width:22px;
-                height:22px;
-                cursor:pointer;
-                "
-
-                ${isChecked ? 'checked' : ''}
-
-                onchange="toggleAbsen('${idSiswa}', this.checked)">
-            </div>`;
-        });
-
-        // TAMPILKAN LIST ABSENSI
-        listContainer.innerHTML = html;
-
-        // TOTAL HADIR
-        document.getElementById("total-hadir").innerText =
-        countHadir;
-
-        // TAMPILKAN TIDAK HADIR
-        tidakHadirContainer.innerHTML =
-        tidakHadirHTML ||
-
-        `<div style="
-        padding:10px;
-        background:rgba(34,197,94,0.15);
-        border-radius:10px;
-        color:white;
-        font-weight:bold;
-        ">
-            ✅ Semua siswa hadir hari ini
-        </div>`;
-
-        // UPDATE RANKING
-        updateRanking();
-
-    } catch(error){
-
-        console.error(error);
-
-        listContainer.innerHTML =
-        "<p style='color:red;'>Gagal memuat data.</p>";
-    }
-}
-// --- LOGIKA PENDUKUNG ABSENSI ---
-
-function getTodayKey() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-}
-
-function getMonthKey() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth() + 1}`;
-}
-
-// Fungsi Simpan Ceklis
-async function toggleAbsen(siswaId, isChecked) {
-    const today = getTodayKey();
-    const ref = db.collection("absensi").doc(today);
-
-    try {
-        if (isChecked) {
-            await ref.set({
-                hadir: firebase.firestore.FieldValue.arrayUnion(siswaId)
-            }, { merge: true });
-        } else {
-            await ref.update({
-                hadir: firebase.firestore.FieldValue.arrayRemove(siswaId)
-            });
-        }
-        // Segarkan data pop-up absensi secara aman
-        loadAbsensi();
-    } catch (e) {
-        console.error("Gagal simpan absensi:", e);
-    }
-}
-
-
-// Fungsi Hitung Ranking Bulanan
-async function updateRanking() {
-    const month = getMonthKey();
-    const snapshot = await db.collection("absensi").get();
-    const stats = {};
-
-    snapshot.forEach(doc => {
-        if (doc.id.startsWith(month)) {
-            const hadir = doc.data().hadir || [];
-            hadir.forEach(id => {
-                stats[id] = (stats[id] || 0) + 1;
-            });
-        }
-    });
-
-    const siswaSnap = await db.collection("siswa").get();
-    const rankData = [];
-    siswaSnap.forEach(doc => {
-        if (stats[doc.id]) {
-            rankData.push({ nama: doc.data().nama, count: stats[doc.id] });
-        }
-    });
-
-    rankData.sort((a, b) => b.count - a.count);
-    const top3 = rankData.slice(0, 3);
-
-    let html = "";
-    top3.forEach((r, i) => {
-        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-        html += `<div style="padding:5px; border-bottom:1px solid rgba(255,255,255,0.05)">${medal} ${r.nama} (${r.count}x)</div>`;
-    });
-    document.getElementById("ranking-kehadiran").innerHTML = html || "Belum ada data bulan ini";
-}
-// =========================
-// BMI APP POPUP
-// =========================
-
-function toggleBMIApp(show){
-
-    document.getElementById("bmiAppModal").style.display =
-    show ? "block" : "none";
-}
-
-// =========================
-// SUPER STOPWATCH SYSTEM
-// =========================
-
-let stopwatchInterval;
-
-let elapsed = 0;
-
-let running = false;
-
-let lapCount = 1;
-
-let round = 1;
-
-let targetTime = 120000;
-let nextRoundTarget = 120000;
-// =========================
-// FORMAT TIME
-// =========================
-
-function formatTime(ms){
-
-const minutes =
-Math.floor(ms / 60000);
-
-const seconds =
-Math.floor((ms % 60000) / 1000);
-
-const centiseconds =
-Math.floor((ms % 1000) / 10);
-
-return `${String(minutes).padStart(2,'0')}:` +
-`${String(seconds).padStart(2,'0')}.` +
-`${String(centiseconds).padStart(2,'0')}`;
-}
-
-// =========================
-// UPDATE DISPLAY
-// =========================
-
-function updateDisplay(){
-
-document.getElementById("stopwatchDisplay").innerText =
-formatTime(elapsed);
-
-// PROGRESS BAR PER ROUND
-const currentRoundTime =
-elapsed % targetTime;
-
-const percent =
-Math.min(
-(currentRoundTime / targetTime) * 100,
-100
-);
-
-document.getElementById("progressBar").style.width =
-percent + "%";
-
-// NAIK ROUND HANYA SEKALI
-if(elapsed >= nextRoundTarget){
-
-playBeep();
-
-navigator.vibrate?.([300,100,300]);
-
-round++;
-
-document.getElementById("roundText").innerText =
-round;
-
-// TARGET ROUND BERIKUTNYA
-nextRoundTarget =
-round * targetTime;
-}
-}
-
-// =========================
-// START
-// =========================
-
-function startStopwatch(){
-
-if(running) return;
-
-const menit =
-parseInt(
-document.getElementById("targetMinute").value
-) || 1;
-
-targetTime = menit * 60000;
-
-// TARGET PERTAMA
-nextRoundTarget =
-(round * targetTime);
-
-running = true;
-
-navigator.vibrate?.(100);
-
-const start =
-Date.now() - elapsed;
-
-stopwatchInterval = setInterval(()=>{
-
-elapsed = Date.now() - start;
-
-updateDisplay();
-
-},10);
-}
-// =========================
-// PAUSE
-// =========================
-
-function pauseStopwatch(){
-
-running = false;
-
-clearInterval(stopwatchInterval);
-
-navigator.vibrate?.([100,50,100]);
-}
-
-// =========================
-// RESET
-// =========================
-
-function resetStopwatch(){
-
-running = false;
-
-clearInterval(stopwatchInterval);
-
-elapsed = 0;
-
-lapCount = 1;
-
-round = 1;
-nextRoundTarget = targetTime;
-
-document.getElementById("roundText").innerText =
-"1";
-
-document.getElementById("progressBar").style.width =
-"0%";
-
-document.getElementById("lapContainer").innerHTML =
-"<p style='opacity:.6'>Belum ada lap</p>";
-
-document.getElementById("stopwatchDisplay").innerText =
-"00:00:00";
-
-navigator.vibrate?.([200,100,200]);
-}
-
-// =========================
-// SAVE LAP
-// =========================
-
-function saveLap(){
-
-const lap =
-document.createElement("div");
-
-lap.className = "lap-item";
-
-lap.innerHTML = `
-<span>🏆 LAP ${lapCount}</span>
-<span>${formatTime(elapsed)}</span>
-`;
-
-document.getElementById("lapContainer")
-.prepend(lap);
-
-lapCount++;
-
-navigator.vibrate?.(50);
-}
-
-// =========================
-// SOUND
-// =========================
-
-function playBeep(){
-
-const ctx =
-new(window.AudioContext ||
-window.webkitAudioContext)();
-
-const osc =
-ctx.createOscillator();
-
-osc.type = "sine";
-
-osc.frequency.value = 800;
-
-osc.connect(ctx.destination);
-
-osc.start();
-
-setTimeout(()=>{
-
-osc.stop();
-
-},300);
-}
-function toggleBelumModal(show){
-
-document.getElementById(
-"belumBayarModal"
-).style.display = show
-? "block"
-: "none";
-
-}
-
-async function showBelumBayar(){
-
-toggleBelumModal(true);
-
-const list =
-document.getElementById(
-"belumBayarList"
-);
-
-list.innerHTML =
-"<p>Memuat data...</p>";
-
-const mingguNow =
-getMingguKey();
-
-const snapshot =
-await db.collection("siswa").get();
-
-let html = "";
-
-snapshot.forEach(doc=>{
-
-const d = doc.data();
-
-const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
-const belumBayar = (d.minggu_bayar !== mingguNow) && !punyaKuota;
-
-
-if(belumBayar){
-
-html += `
-
-<div style="
-padding:14px;
-margin-bottom:10px;
-background:rgba(239,68,68,.12);
-border:1px solid rgba(239,68,68,.2);
-border-radius:14px;
-">
-
-<div style="
-font-size:16px;
-font-weight:800;
-color:white;
-">
-
-${d.nama || "-"}
-
-</div>
-
-<div style="
-margin-top:5px;
-font-size:13px;
-opacity:.7;
-">
-
-🥋 ${d.warna_sabuk || "-"}
-
-</div>
-
-<div style="
-margin-top:5px;
-font-size:13px;
-opacity:.7;
-">
-
-📱 ${d.nomor_hp || "-"}
-
-</div>
-
-</div>
-
-`;
-
-}
-
-});
-
-if(html === ""){
-
-html = `
-
-<div style="
-padding:15px;
-background:rgba(34,197,94,.15);
-border-radius:14px;
-font-weight:bold;
-">
-
-✅ Semua member sudah bayar
-
-</div>
-
-`;
-
-}
-
-list.innerHTML = html;
-
-}
-// --- FUNGSI RESET / POTONG DEPOSIT KUOTA SAAT MINGGU BERGANTI ---
-async function prosesPotongKuotaMingguan() {
-    if (!confirm("PENTING!\nApakah Anda ingin menyinkronkan data untuk minggu baru?\nSistem akan otomatis memotong 1 kuota deposit bagi siswa yang membayar borongan.")) return;
-    
-    const snapshot = await db.collection("siswa").get();
-    let totalDipotong = 0;
-    
-    // Gunakan Firestore Batch agar proses update massal cepat dan aman
-    const batch = db.batch();
-    
-    snapshot.forEach(doc => {
-        const d = doc.data();
-        const kuota = parseInt(d.kuota_kas || 0);
-        
-        if (kuota > 0) {
-            const kuotaBaru = kuota - 1;
-            const ref = db.collection("siswa").doc(doc.id);
+            // Posisi acak
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.width = Math.random() * 6 + 2 + 'px';
+            particle.style.height = particle.style.width;
             
-            batch.update(ref, {
-                kuota_kas: kuotaBaru
-            });
-            totalDipotong++;
+            // Waktu & delay animasi acak
+            particle.style.animationDuration = Math.random() * 5 + 5 + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            
+            container.appendChild(particle);
         }
-    });
-    
-    await batch.commit();
-    alert(`⚡ Sukses menyinkronkan minggu baru!\nSebanyak ${totalDipotong} member yang borongan kuotanya berhasil dipotong 1 minggu.`);
-    loadData();
-}
-// =========================================================
-// FUNGSI OTOMATIS & MANUAL UNTUK RESET DATA SETIAP AWAL BULAN
-// =========================================================
-async function cekDanResetAwalBulanOtomatis() {
-    const now = new Date();
-    const bulanTahunSekarang = `${now.getFullYear()}-${now.getMonth() + 1}`; // Contoh: 2026-5
-    
-    // Ambil catatan kapan terakhir kali reset dilakukan dari database
-    const metaRef = db.collection("sistem_meta").doc("terakhir_reset_bulan");
-    
-    try {
-        const doc = await metaRef.get();
-        let bulanTerakhirReset = "";
+
+        // Simulasi angka progress naik perlahan agar terlihat interaktif & super canggih
+        let percent = 68;
+        const percentText = document.getElementById('progress-percent');
+        const fillBar = document.querySelector('.progress-bar-fill');
         
-        if (doc.exists) {
-            bulanTerakhirReset = doc.data().bulan || "";
-        }
-        
-        // Jika bulan sekarang tidak sama dengan bulan terakhir kali reset (Artinya sudah ganti bulan baru!)
-        if (bulanTerakhirReset !== bulanTahunSekarang) {
-            console.log("🌙 Mendeteksi awal bulan baru! Menjalankan reset riwayat otomatis...");
-            await eksekusiResetRiwayatBulanan();
-            // Simpan tanda bahwa bulan ini sudah berhasil di-reset agar tidak berulang-ulang
-            await metaRef.set({ bulan: bulanTahunSekarang });
-        }
-    } catch (error) {
-        console.error("Gagal mengecek status reset bulanan:", error);
-    }
-}
-
-async function eksekusiResetRiwayatBulanan() {
-    const snapshot = await db.collection("siswa").get();
-    const batch = db.batch();
-    let totalSiswa = 0;
-
-    snapshot.forEach(doc => {
-        const ref = db.collection("siswa").doc(doc.id);
-        // Reset total: Kosongkan riwayat kas teks, kosongkan array pembayaran, kembalikan kuota ke 0
-        batch.update(ref, {
-            riwayat_kas: [],
-            pembayaran: [],
-            kuota_kas: 0,
-            minggu_bayar: "",
-            status_pembayaran: "Belum Lunas",
-            status_kas_mingguan: "Belum Lunas",
-            status_kas: "Belum Lunas"
-        });
-        totalSiswa++;
-    });
-
-    await batch.commit();
-    return totalSiswa;
-}
-
-// Fungsi jika Admin ingin mereset paksa secara manual lewat tombol
-async function tombolResetManualBulan() {
-    const konfirmasi = confirm("⚠️ PERINGATAN KELAS BERAT!\n\nApakah Anda yakin ingin MENGHAPUS SEMUA RIWAYAT PEMBAYARAN DAN KUOTA seluruh siswa sekarang?\n\nData yang sudah dihapus tidak bisa dikembalikan!");
-    if (!konfirmasi) return;
-
-    const pengetikan = prompt("Ketik kata 'SETUJU' (huruf besar semua) untuk melanjutkan penghapusan massal:");
-    if (pengetikan !== "SETUJU") {
-        alert("Gagal! Kata konfirmasi salah.");
-        return;
-    }
-
-    try {
-        const total = await eksekusiResetRiwayatBulanan();
-        // Set juga meta data bulan agar sistem tahu bulan ini sudah bersih
-        const now = new Date();
-        const bulanTahunSekarang = `${now.getFullYear()}-${now.getMonth() + 1}`;
-        await db.collection("sistem_meta").doc("terakhir_reset_bulan").set({ bulan: bulanTahunSekarang });
-        
-        alert(`🎉 Sukses Besar! Riwayat dan kuota bulanan ${total} siswa telah dibersihkan menjadi kosong total!`);
-        loadData();
-    } catch (err) {
-        alert("Terjadi kesalahan: " + err.message);
-    }
-}
-
-// --- FUNGSI DARURAT JIKA ADMIN SALAH INPUT JUMLAH MINGGU ---
-function koreksiKuotaManual(id) {
-    const ref = db.collection("siswa").doc(id);
-    ref.get().then(doc => {
-        if (!doc.exists) return;
-        const d = doc.data();
-        const kuotaSekarang = parseInt(d.kuota_kas || 0);
-        
-        const inputKuotaBaru = prompt(`Koreksi Jumlah Kuota Kas Masal untuk ${d.nama}:\n\nKuota saat ini: ${kuotaSekarang} Minggu\nSilakan masukkan angka kuota yang benar:`, kuotaSekarang);
-        
-        if (inputKuotaBaru === null) return; // Batal
-        
-        const kuotaBaru = parseInt(inputKuotaBaru);
-        if (isNaN(kuotaBaru) || kuotaBaru < 0) {
-            alert("Input angka tidak valid!");
-            return;
-        }
-        
-        let riwayat = d.riwayat_kas || [];
-        const now = new Date();
-        const waktuKoreksi = now.toLocaleDateString("id-ID") + " " + now.toLocaleTimeString("id-ID");
-        riwayat.push(`✏️ Admin mengoreksi kuota kas dari ${kuotaSekarang} menjadi ${kuotaBaru} Minggu (${waktuKoreksi}).`);
-        
-        ref.update({
-            kuota_kas: kuotaBaru,
-            riwayat_kas: riwayat,
-            minggu_bayar: kuotaBaru > 0 ? getMingguKey() : "",
-            status_pembayaran: kuotaBaru > 0 ? "Lunas" : "Belum Lunas",
-            status_kas_mingguan: kuotaBaru > 0 ? "Lunas" : "Belum Lunas",
-            status_kas: kuotaBaru > 0 ? "Lunas" : "Belum Lunas"
-        }).then(() => {
-            alert("Data kuota berhasil dikoreksi!");
-            cekDanResetAwalBulanOtomatis();
-            loadData();
-        });
-    });
-}
-
-
-</script>
-
+        setInterval(() => {
+            if (percent < 99) {
+                percent += Math.floor(Math.random() * 2);
+                percentText.innerText = percent + "%";
+                fillBar.style.width = percent + "%";
+            }
+        }, 8000);
+    </script>
 </body>
 </html>
