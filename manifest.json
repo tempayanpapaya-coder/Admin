@@ -1,0 +1,32 @@
+{
+  "name": "BMI Taekwondo Academy - Admin Dashboard",
+  "short_name": "BMI Taekwondo",
+  "description": "Sistem manajemen member, kas, absensi, dan jadwal BMI Taekwondo Academy",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1f1101",
+  "theme_color": "#1f1101",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

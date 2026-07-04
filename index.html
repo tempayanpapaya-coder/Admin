@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BMI Taekwondo Academy - Admin Dashboard</title>
 
+    <!-- ====== PWA: SUPPORT INSTALL DI ANDROID ====== -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1f1101">
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- Dukungan tambahan untuk iOS Safari (bonus, walau target utama Android) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BMI Taekwondo">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png">
+    <link rel="icon" href="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png">
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -367,6 +378,168 @@
                 padding: 6px 3px;
             }
         }
+
+        /* ======================================================
+           BOTTOM NAVIGATION (KHUSUS ANDROID / LAYAR SEMPIT)
+           ====================================================== */
+        .bottom-nav {
+            display: none; /* hanya muncul di mobile lewat media query */
+        }
+
+        @media (max-width: 768px) {
+            /* Beri jarak bawah body biar konten terakhir tidak ketutup bottom nav */
+            body { padding-bottom: 100px; }
+
+            /* Tombol grid atas (.actions) disembunyikan di HP, digantikan bottom nav + drawer */
+            .actions { display: none !important; }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                left: 0; right: 0; bottom: 0;
+                z-index: 900;
+                justify-content: space-around;
+                align-items: flex-end;
+                background: linear-gradient(180deg, #2c1a04, #170d02 60%);
+                border-top: 2px solid #d4af37;
+                box-shadow: 0 -8px 25px rgba(0,0,0,0.6);
+                padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .bn-item {
+                background: none;
+                border: none;
+                color: #bfa37a;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+                flex: 1;
+                padding: 6px 2px;
+                cursor: pointer;
+                transition: .2s;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .bn-item .bn-icon { font-size: 20px; line-height: 1; }
+            .bn-item:active { transform: scale(0.92); color: #ffcc00; }
+            .bn-item.active { color: #ffcc00; }
+
+            /* Tombol tengah (Tambah Member) dibuat menonjol seperti FAB */
+            .bn-item.bn-fab .bn-icon {
+                width: 52px; height: 52px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 26px;
+                margin-top: -28px;
+                border-radius: 50%;
+                background: linear-gradient(to bottom, #1e3a1e, #112411);
+                border: 2px solid #8da47e;
+                color: #e2ecd8;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.6), 0 0 0 4px #170d02;
+            }
+            .bn-item.bn-fab:active .bn-icon { transform: scale(0.9); }
+            .bn-item.bn-fab { color: #e2ecd8; }
+
+            /* Badge notifikasi kecil (misal jumlah belum bayar) di ikon Menu */
+            .bn-item { position: relative; }
+            .bn-dot {
+                position: absolute;
+                top: 2px; right: 22%;
+                width: 9px; height: 9px;
+                border-radius: 50%;
+                background: #ef4444;
+                border: 1px solid #170d02;
+                display: none;
+            }
+            .bn-dot.show { display: block; }
+        }
+
+        /* ======================================================
+           DRAWER "MENU LAINNYA" (bottom sheet slide-up)
+           ====================================================== */
+        .drawer-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1100;
+        }
+        .drawer-overlay.open { display: block; }
+
+        .drawer-sheet {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #2c1a04, #170d02);
+            border-top: 2px solid #d4af37;
+            border-radius: 22px 22px 0 0;
+            padding: 10px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+            transform: translateY(100%);
+            transition: transform .28s ease;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        .drawer-overlay.open .drawer-sheet { transform: translateY(0); }
+
+        .drawer-handle {
+            width: 44px; height: 5px; border-radius: 999px;
+            background: #5c3a21; margin: 8px auto 16px;
+        }
+        .drawer-sheet h2 {
+            color: #f3e5ab; font-size: 16px; letter-spacing: 1px;
+            margin-bottom: 14px; text-align: center;
+        }
+        .drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .drawer-grid .btn { min-height: 62px; font-size: 12px; }
+
+        /* ======================================================
+           TABEL SISWA -> KARTU DI LAYAR HP (RESPONSIVE CARD TABLE)
+           ====================================================== */
+        @media (max-width: 768px) {
+            .table-wrap { border: none; background: none; overflow-x: visible; }
+            table { min-width: 0; }
+            table thead { display: none; } /* header kolom disembunyikan, dipakai jadi label */
+
+            table tbody tr {
+                display: block;
+                background: linear-gradient(145deg, rgba(44,26,4,0.55), rgba(19,10,1,0.75));
+                border: 1px solid #5c3a21;
+                border-radius: 16px;
+                margin-bottom: 12px;
+                padding: 6px 10px;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+            }
+            table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                text-align: right;
+                border-bottom: 1px dashed rgba(92,58,33,0.4);
+                padding: 10px 2px;
+            }
+            table td:last-child { border-bottom: none; flex-wrap: wrap; justify-content: flex-end; }
+            table td::before {
+                content: attr(data-label);
+                text-align: left;
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #d4af37;
+                opacity: 0.85;
+                white-space: nowrap;
+            }
+            table td[data-label="Nama (Klik Riwayat)"] {
+                font-size: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -540,6 +713,42 @@
     <p style="margin-top:5px;">BMI Taekwondo Academy Management System © 2026</p>
 </div>
 
+<!-- ====== BOTTOM NAVIGATION (MUNCUL OTOMATIS DI LAYAR HP) ====== -->
+<div class="bottom-nav" id="bottomNav">
+    <button class="bn-item" onclick="scrollToBeranda()">
+        <span class="bn-icon">🏠</span><span>Beranda</span>
+    </button>
+    <button class="bn-item" onclick="toggleAbsensiPopup(true)">
+        <span class="bn-icon">✅</span><span>Absensi</span>
+    </button>
+    <button class="bn-item bn-fab" onclick="openAddModal()">
+        <span class="bn-icon">➕</span><span>Tambah</span>
+    </button>
+    <button class="bn-item" onclick="toggleJadwalAdmin(true)">
+        <span class="bn-icon">📅</span><span>Jadwal</span>
+    </button>
+    <button class="bn-item" onclick="toggleDrawer(true)">
+        <span class="bn-icon">☰</span><span>Menu</span>
+        <span class="bn-dot" id="menuDot"></span>
+    </button>
+</div>
+
+<!-- ====== DRAWER "MENU LAINNYA" (bottom sheet) ====== -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="if(event.target===this) toggleDrawer(false)">
+    <div class="drawer-sheet">
+        <div class="drawer-handle"></div>
+        <h2>⚙️ Menu Lainnya</h2>
+        <div class="drawer-grid">
+            <button class="btn btn-export" onclick="toggleDrawer(false); exportExcel()">📄 Export Excel</button>
+            <button class="btn bmi-btn" onclick="toggleDrawer(false); toggleBMIApp(true)">⏱️ Stopwatch</button>
+            <button class="btn btn-caution" onclick="toggleDrawer(false); prosesPotongKuotaMingguan()">🔄 Sinkron Minggu Baru</button>
+            <button class="btn btn-danger" onclick="toggleDrawer(false); tombolResetManualBulan()">💥 Reset Total Bulanan</button>
+            <button class="btn btn-add" id="installBtn" style="display:none; grid-column: 1 / -1;" onclick="installApp()">📲 Install Aplikasi ke HP</button>
+        </div>
+        <button class="btn" style="width:100%; margin-top:16px; background:#3a3a3a;" onclick="toggleDrawer(false)">Tutup</button>
+    </div>
+</div>
+
 <script>
 // --- CONFIG FIREBASE ---
 const firebaseConfig = {
@@ -606,16 +815,16 @@ if (d.tanggal_lahir) {
 
 html += `
 <tr>
-    <td onclick="lihatRiwayat('${doc.id}')" style="cursor:pointer; color:#60a5fa; font-weight:bold;">${d.nama || "-"}</td>
-    <td>${d.warna_sabuk || "-"}</td>
-    <td>${d.nomor_hp || "-"}</td>
-    <td style="color: #f3e5ab; white-space: nowrap;">📅 ${tglLahirIndo}</td>
-    <td>${d.berat_badan || 0}kg / ${d.tinggi_badan || 0}cm</td>
-    <td>
+    <td data-label="Nama (Klik Riwayat)" onclick="lihatRiwayat('${doc.id}')" style="cursor:pointer; color:#60a5fa; font-weight:bold;">${d.nama || "-"}</td>
+    <td data-label="Sabuk">${d.warna_sabuk || "-"}</td>
+    <td data-label="No HP">${d.nomor_hp || "-"}</td>
+    <td data-label="Tgl Lahir" style="color: #f3e5ab; white-space: nowrap;">📅 ${tglLahirIndo}</td>
+    <td data-label="Fisik">${d.berat_badan || 0}kg / ${d.tinggi_badan || 0}cm</td>
+    <td data-label="Status">
         <span class="badge ${isLunas ? 'green' : 'red'}">${isLunas ? 'Lunas' : 'Belum'}</span>
         ${punyaKuota ? `<div style="font-size:11px; opacity:0.7; margin-top:4px; color:#38bdf8;">Sisa: ${d.kuota_kas} Mgg</div>` : ''}
     </td>
-    <td>
+    <td data-label="Aksi">
         <button class="btn btn-pay" onclick="bayar('${doc.id}')" ${isLunas ? 'disabled style="opacity:0.5"' : ''}>Bayar</button>
         <button class="btn" style="background-color: #eab308; color: #000; font-weight: bold;" onclick="koreksiKuotaManual('${doc.id}')">CELENGAN</button>
         <button class="btn btn-edit" onclick="editData('${doc.id}')">Edit</button>
@@ -631,6 +840,9 @@ html += `
         document.getElementById("totalLunas").innerText = lunas;
         document.getElementById("totalBelum").innerText = belum;
         document.getElementById("pemasukan").innerText = "Rp" + (lunas * 5000).toLocaleString("id-ID");
+
+        const menuDot = document.getElementById("menuDot");
+        if (menuDot) menuDot.classList.toggle("show", belum > 0);
     });
 }
 
@@ -931,6 +1143,49 @@ async function updateRanking() {
 }
 
 function toggleBMIApp(show){ document.getElementById("bmiAppModal").style.display = show ? "block" : "none"; }
+
+// --- BOTTOM NAV & DRAWER (MOBILE) ---
+function toggleDrawer(show){
+    document.getElementById("drawerOverlay").classList.toggle("open", show);
+}
+
+function scrollToBeranda(){
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// --- PWA: REGISTRASI SERVICE WORKER (biar bisa diinstall & jalan offline shell) ---
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+            .then(() => console.log("Service worker aktif ✅"))
+            .catch((err) => console.warn("Gagal register service worker:", err));
+    });
+}
+
+// --- PWA: TOMBOL "INSTALL APLIKASI KE HP" (muncul otomatis kalau browser support) ---
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    const btn = document.getElementById("installBtn");
+    if (btn) btn.style.display = "block";
+});
+
+function installApp(){
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.finally(() => {
+        deferredInstallPrompt = null;
+        const btn = document.getElementById("installBtn");
+        if (btn) btn.style.display = "none";
+    });
+}
+
+window.addEventListener("appinstalled", () => {
+    const btn = document.getElementById("installBtn");
+    if (btn) btn.style.display = "none";
+});
 
 // --- STOPWATCH SYSTEM ---
 let stopwatchInterval;
