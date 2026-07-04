@@ -1,0 +1,549 @@
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Marcellus&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #1f1101, #2c1a04, #130a01);
+            min-height: 100vh;
+            padding: 15px;
+            color: #fff;
+        }
+
+        /* --- HEADER KONTANER JAWA KLASIK --- */
+        .header-top-jawa {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: linear-gradient(135deg, #2c1a04, #3d250a, #1f1101);
+            border: 3px double #d4af37; 
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(212, 175, 55, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-top-jawa::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.04;
+            background-image: url('https://www.transparenttextures.com/patterns/black-thread-light.png'); 
+            pointer-events: none;
+        }
+
+        .brand-wrap-jawa {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-box-jawa {
+            width: 90px;
+            height: 90px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #1f1101;
+            padding: 5px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-box-jawa img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            filter: sepia(20%) contrast(110%);
+        }
+
+        .brand-text-jawa {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-text-jawa h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #f3e5ab; 
+            text-shadow: 2px 2px 0px #000, 0 0 10px rgba(212, 175, 55, 0.6);
+            line-height: 1;
+            margin: 0;
+        }
+
+        .brand-text-jawa h2 {
+            font-family: 'Marcellus', serif;
+            margin-top: 6px;
+            font-size: clamp(14px, 2vw, 19px);
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #d4af37; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .brand-text-jawa p {
+            margin-top: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            font-style: italic;
+            color: #bfa37a; 
+            letter-spacing: 0.5px;
+        }
+
+        .clock-box-jawa {
+            background: #130a01;
+            border: 1px solid #5c3a21;
+            outline: 1px solid #d4af37;
+            outline-offset: -4px;
+            color: #d4af37;
+            padding: 12px 25px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 2;
+        }
+
+        #clock-time {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffcc00;
+            text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
+            letter-spacing: 1px;
+        }
+
+        #clock-date {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+            color: #c9b097;
+            letter-spacing: 1px;
+        }
+
+        /* --- TOMBOL ACTIONS JAWA KLASIK CEMBUNG MENGKILAP --- */
+        .actions {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .actions .btn {
+            position: relative;
+            overflow: hidden;
+            border: none;
+            min-height: 62px;
+            border-radius: 14px;
+            font-family: 'Marcellus', 'Segoe UI', serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #f3e5ab;
+            cursor: pointer;
+            text-transform: uppercase;
+            padding: 8px 5px;
+            text-align: center;
+            background: linear-gradient(to bottom, #4a2f13 0%, #291705 50%, #170d02 100%);
+            border: 1px solid #d4af37;
+            box-shadow: 
+                inset 0 3px 5px rgba(255, 255, 255, 0.25), 
+                inset 0 -3px 6px rgba(0, 0, 0, 0.7),       
+                0 4px 8px rgba(0, 0, 0, 0.4);             
+            transition: all 0.2s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        .actions .btn::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border-radius: 12px 12px 0 0;
+            pointer-events: none;
+        }
+
+        .actions .btn::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -150%;
+            width: 80%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            transform: skewX(-30deg);
+            transition: 0.6s ease;
+        }
+        .actions .btn:hover::after { left: 150%; }
+
+        .actions .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.3), inset 0 -3px 6px rgba(0,0,0,0.6), 0 6px 12px rgba(0,0,0,0.5);
+            color: #fff;
+        }
+        .actions .btn:active {
+            transform: translateY(1px);
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* WARNA KHUSUS TOMBOL */
+        .actions .btn-export, .actions .btn-add {
+            background: linear-gradient(to bottom, #1e3a1e 0%, #112411 50%, #071007 100%);
+            border-color: #8da47e; color: #e2ecd8;
+        }
+        .actions .bmi-btn {
+            background: linear-gradient(to bottom, #784807 0%, #523002 50%, #301c01 100%);
+            border-color: #d4af37; color: #fcebb6;
+        }
+        .actions .btn-caution {
+            background: linear-gradient(to bottom, #7c2d12 0%, #5b1e0a 50%, #360f04 100%) !important;
+            border-color: #f97316; color: #ffedd5 !important;
+        }
+        .actions .btn-danger {
+            background: linear-gradient(to bottom, #7f1d1d 0%, #581c1c 50%, #3b0707 100%) !important;
+            border-color: #ef4444; color: #fee2e2 !important;
+            padding: 10px 20px;
+        }
+
+        /* --- BUTTONS UMUM LAINNYA --- */
+        .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #fff; transition: .2s; font-size: 13px; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .btn-edit { background: #3b82f6; }
+        .btn-pay { background: #14b8a6; }
+        .btn-delete { background: #ef4444; }
+
+        /* SEARCH & STATS */
+        .search-box input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #5c3a21; background: #130a01; color: #fff; margin: 15px 0; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+            border-radius: 24px;
+            text-align: center;
+            backdrop-filter: blur(14px);
+            background: linear-gradient(145deg, rgba(44, 26, 4, 0.4), rgba(19, 10, 1, 0.6));
+            border: 1px solid #d4af37;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: .35s;
+        }
+        
+        .belum-card { cursor: pointer; transition: .3s; }
+        .belum-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(239,68,68,.35);
+        }
+
+        .lihat-text { margin-top: 10px; font-size: 12px; opacity: .7; font-weight: 700; letter-spacing: 1px; }
+        .card .num { font-size: 24px; font-weight: 800; margin-top: 5px; }
+
+        .stats .card {
+            position: relative;
+            overflow: hidden;
+            padding: 22px;
+            border-radius: 28px;
+            background: linear-gradient(to bottom, #2c1a04 0%, #130a01 100%);
+            border: 1px solid #d4af37;
+            box-shadow: inset 0 2px 3px rgba(255,255,255,0.1), 0 15px 30px rgba(0,0,0,0.5);
+            transition: .35s;
+        }
+
+        .stats .card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.6);
+        }
+
+        .stats .card h3 { font-size: 15px; font-weight: 800; letter-spacing: 2px; color: #f3e5ab; text-transform: uppercase; }
+        .stats .card .num { font-size: 20px; font-weight: 900; margin-top: 5px; color: white; text-shadow: 0 6px 14px rgba(0,0,0,0.45); animation: floatingText 3s ease-in-out infinite; }
+
+        @keyframes floatingText {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; background: rgba(0, 0, 0, 0.3); border: 1px solid #5c3a21; border-radius: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #2c1a04; color: #f3e5ab; padding: 12px; text-align: left; font-size: 14px; border-bottom: 1px solid #d4af37; }
+        td { padding: 12px; border-bottom: 1px solid rgba(92, 58, 33, 0.3); font-size: 13px; vertical-align: middle; font-weight: 600; }
+        .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; }
+        .green { background: #16a34a; }
+        .red { background: #dc2626; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; padding: 20px; }
+        .modal-content { background: #2c1a04; color: #fff; border: 2px solid #d4af37; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-content label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; color: #f3e5ab; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #5c3a21; background: #130a01; color: #16a34a; border-radius: 8px; }
+        option { color: black; }
+
+        .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 12px; padding: 20px 0; border-top: 1px dashed #5c3a21; }
+        
+        /* JADWAL & POPUP ADMIN */
+        .schedule-admin-card { background: rgba(0,0,0,0.3); padding: 18px; border-radius: 18px; margin-bottom: 18px; border: 1px solid #5c3a21; }
+        .schedule-admin-title { font-size: 20px; font-weight: 900; margin-bottom: 15px; color: #d4af37; }
+        .session-item { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 14px; margin-bottom: 12px; }
+        .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-session { margin-top: 10px; background: #16a34a; }
+        .jadwal-popup { max-width: 700px; background: #2c1a04; color: white; border: 2px solid #d4af37; }
+
+        /* STOPWATCH */
+        .super-stopwatch { background: rgba(0,0,0,0.3); border-radius: 30px; padding: 25px; border: 1px solid #5c3a21; }
+        .sw-title { text-align: center; font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #ffcc00; letter-spacing: 2px; }
+        .stopwatch-ring { display: flex; flex-direction: column; align-items: center; overflow: hidden; background: #130a01; padding: 30px; border-radius: 30px; border: 1px solid #d4af37; }
+        .sw-display { font-size: clamp(38px, 9vw, 58px); width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-family: monospace; font-weight: 900; letter-spacing: 2px; line-height: 1; padding: 10px 0; color: #ffcc00; text-shadow: 0 0 10px #ffcc00; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.03); } }
+        .sw-progress { width: 100%; height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-top: 25px; }
+        #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, #d4af37, #ffcc00); transition: .1s; }
+        .sw-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+        .sw-btn { border: none; padding: 15px; border-radius: 18px; font-weight: 900; font-size: 15px; cursor: pointer; transition: .2s; color: white; }
+        .sw-btn:hover { transform: translateY(-3px) scale(1.03); }
+        .start { background: #16a34a; }
+        .pause { background: #f59e0b; }
+        .reset { background: #ef4444; }
+        .lap { background: #3b82f6; }
+        .round-box { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
+        .round-box div { flex: 1; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #5c3a21; }
+        .round-box h2 { margin-top: 8px; font-size: 28px; color: #ffcc00; }
+        .lap-container { margin-top: 20px; max-height: 200px; overflow-y: auto; }
+        .lap-item { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: bold; border-left: 4px solid #d4af37; }
+
+        /* --- MEDIA QUERY OPTIMASI PONSEL (ANTI-RUSAK) --- */
+        @media (max-width: 768px) {
+            .header-top-jawa {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+            }
+            .brand-wrap-jawa {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .clock-box-jawa {
+                width: 100%;
+            }
+            .actions {
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 8px; 
+            }
+            .actions .btn {
+                min-height: 58px; 
+                font-size: 11px;  
+                padding: 6px 3px;
+            }
+        }
+
+        /* ======================================================
+           BOTTOM NAVIGATION (KHUSUS ANDROID / LAYAR SEMPIT)
+           ====================================================== */
+        .bottom-nav {
+            display: none; /* hanya muncul di mobile lewat media query */
+        }
+
+        @media (max-width: 768px) {
+            /* Beri jarak bawah body biar konten terakhir tidak ketutup bottom nav */
+            body { padding-bottom: 100px; }
+
+            /* Tombol grid atas (.actions) disembunyikan di HP, digantikan bottom nav + drawer */
+            .actions { display: none !important; }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                left: 0; right: 0; bottom: 0;
+                z-index: 900;
+                justify-content: space-around;
+                align-items: flex-end;
+                background: linear-gradient(180deg, #2c1a04, #170d02 60%);
+                border-top: 2px solid #d4af37;
+                box-shadow: 0 -8px 25px rgba(0,0,0,0.6);
+                padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .bn-item {
+                background: none;
+                border: none;
+                color: #bfa37a;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+                flex: 1;
+                padding: 6px 2px;
+                cursor: pointer;
+                transition: .2s;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .bn-item .bn-icon { font-size: 20px; line-height: 1; }
+            .bn-item:active { transform: scale(0.92); color: #ffcc00; }
+            .bn-item.active { color: #ffcc00; }
+
+            /* Tombol tengah (Tambah Member) dibuat menonjol seperti FAB */
+            .bn-item.bn-fab .bn-icon {
+                width: 52px; height: 52px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 26px;
+                margin-top: -28px;
+                border-radius: 50%;
+                background: linear-gradient(to bottom, #1e3a1e, #112411);
+                border: 2px solid #8da47e;
+                color: #e2ecd8;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.6), 0 0 0 4px #170d02;
+            }
+            .bn-item.bn-fab:active .bn-icon { transform: scale(0.9); }
+            .bn-item.bn-fab { color: #e2ecd8; }
+
+            /* Badge notifikasi kecil (misal jumlah belum bayar) di ikon Menu */
+            .bn-item { position: relative; }
+            .bn-dot {
+                position: absolute;
+                top: 2px; right: 22%;
+                width: 9px; height: 9px;
+                border-radius: 50%;
+                background: #ef4444;
+                border: 1px solid #170d02;
+                display: none;
+            }
+            .bn-dot.show { display: block; }
+        }
+
+        /* ======================================================
+           DRAWER "MENU LAINNYA" (bottom sheet slide-up)
+           ====================================================== */
+        .drawer-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1100;
+        }
+        .drawer-overlay.open { display: block; }
+
+        .drawer-sheet {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #2c1a04, #170d02);
+            border-top: 2px solid #d4af37;
+            border-radius: 22px 22px 0 0;
+            padding: 10px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+            transform: translateY(100%);
+            transition: transform .28s ease;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        .drawer-overlay.open .drawer-sheet { transform: translateY(0); }
+
+        .drawer-handle {
+            width: 44px; height: 5px; border-radius: 999px;
+            background: #5c3a21; margin: 8px auto 16px;
+        }
+        .drawer-sheet h2 {
+            color: #f3e5ab; font-size: 16px; letter-spacing: 1px;
+            margin-bottom: 14px; text-align: center;
+        }
+        .drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .drawer-grid .btn { min-height: 62px; font-size: 12px; }
+
+        /* ======================================================
+           TABEL SISWA -> KARTU DI LAYAR HP (RESPONSIVE CARD TABLE)
+           ====================================================== */
+        @media (max-width: 768px) {
+            .table-wrap { border: none; background: none; overflow-x: visible; }
+            table { min-width: 0; }
+            table thead { display: none; } /* header kolom disembunyikan, dipakai jadi label */
+
+            table tbody tr {
+                display: block;
+                background: linear-gradient(145deg, rgba(44,26,4,0.55), rgba(19,10,1,0.75));
+                border: 1px solid #5c3a21;
+                border-radius: 16px;
+                margin-bottom: 12px;
+                padding: 6px 10px;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+            }
+            table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                text-align: right;
+                border-bottom: 1px dashed rgba(92,58,33,0.4);
+                padding: 10px 2px;
+            }
+            table td:last-child { border-bottom: none; flex-wrap: wrap; justify-content: flex-end; }
+            table td::before {
+                content: attr(data-label);
+                text-align: left;
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #d4af37;
+                opacity: 0.85;
+                white-space: nowrap;
+            }
+            table td[data-label="Nama (Klik Riwayat)"] {
+                font-size: 15px;
+            }
+        }
+        
+        .drawer-grid .btn{
+    color:#f3e5ab !important;
+    border:1px solid #d4af37 !important;
+}
+
+/* Export */
+.drawer-grid .btn-export{
+    background:linear-gradient(to bottom,#1e3a1e,#112411,#071007) !important;
+}
+
+/* Stopwatch */
+.drawer-grid .bmi-btn{
+    background:linear-gradient(to bottom,#784807,#523002,#301c01) !important;
+}
+
+/* Sinkron */
+.drawer-grid .btn-caution{
+    background:linear-gradient(to bottom,#7c2d12,#5b1e0a,#360f04) !important;
+}
+
+/* Reset */
+.drawer-grid .btn-danger{
+    background:linear-gradient(to bottom,#7f1d1d,#581c1c,#3b0707) !important;
+}
+
+/* Tambah */
+.drawer-grid .btn-add{
+    background:linear-gradient(to bottom,#1e3a1e,#112411,#071007) !important;
+}
