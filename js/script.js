@@ -33,6 +33,10 @@ setInterval(() => {
     document.getElementById("clock-date").innerText = now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }, 1000);
 
+// --- CACHE DATA ATLIT (untuk Daftar Nama Atlit & Profil Biodata) ---
+let atlitDataCache = {};
+let currentProfilId = null;
+
 // --- LOAD DATA ---
 function loadData() {
     const cari = document.getElementById("searchInput").value.toLowerCase();
@@ -40,6 +44,21 @@ function loadData() {
     db.collection("siswa").onSnapshot(snapshot => {
         let html = "";
         let total = 0, lunas = 0, belum = 0;
+        atlitDataCache = {};
+
+        // Kumpulkan & urutkan semua atlit berdasarkan nama untuk Daftar Nama Atlit
+        let semuaAtlit = [];
+        snapshot.forEach(doc => {
+            atlitDataCache[doc.id] = doc.data();
+            semuaAtlit.push({ id: doc.id, nama: doc.data().nama || "-" });
+        });
+        semuaAtlit.sort((a, b) => a.nama.localeCompare(b.nama, "id"));
+        renderDaftarAtlitList(semuaAtlit);
+
+        // Jika kartu profil sedang terbuka, refresh datanya secara realtime
+        if (currentProfilId && atlitDataCache[currentProfilId]) {
+            renderProfilAtlit(currentProfilId);
+        }
 
         snapshot.forEach(doc => {
             const d = doc.data();
@@ -241,6 +260,115 @@ function lihatRiwayat(id) {
 }
 
 function closeHistory() { document.getElementById("historyModal").style.display = "none"; }
+
+// ================== DAFTAR NAMA ATLIT ==================
+function bukaDaftarAtlit() {
+    document.getElementById("searchAtlitInput").value = "";
+    document.getElementById("daftarAtlitModal").style.display = "block";
+    filterDaftarAtlit();
+}
+
+function tutupDaftarAtlit() {
+    document.getElementById("daftarAtlitModal").style.display = "none";
+}
+
+function renderDaftarAtlitList(daftarAtlit) {
+    // Simpan data mentah supaya bisa difilter ulang tanpa nunggu snapshot baru
+    window._daftarAtlitRaw = daftarAtlit;
+    filterDaftarAtlit();
+}
+
+function filterDaftarAtlit() {
+    const list = window._daftarAtlitRaw || [];
+    const kataKunci = (document.getElementById("searchAtlitInput")?.value || "").toLowerCase();
+    const hasil = list.filter(a => a.nama.toLowerCase().includes(kataKunci));
+
+    let html = "";
+    hasil.forEach(a => {
+        html += `<div class="atlit-list-item" onclick="bukaProfilAtlit('${a.id}')">
+            <span>${a.nama}</span><span class="chevron">›</span>
+        </div>`;
+    });
+
+    document.getElementById("daftarAtlitList").innerHTML = html || `<div class="atlit-list-empty">Tidak ada atlit ditemukan</div>`;
+}
+
+// ================== PROFIL BIODATA ATLIT ==================
+function bukaProfilAtlit(id) {
+    currentProfilId = id;
+    document.getElementById("profilAtlitModal").style.display = "block";
+    renderProfilAtlit(id);
+}
+
+function tutupProfilAtlit() {
+    currentProfilId = null;
+    document.getElementById("profilAtlitModal").style.display = "none";
+}
+
+function renderProfilAtlit(id) {
+    const d = atlitDataCache[id];
+    if (!d) { tutupProfilAtlit(); return; }
+
+    const mingguNow = getMingguKey();
+    const punyaKuota = parseInt(d.kuota_kas || 0) > 0;
+    const isLunas = (d.minggu_bayar === mingguNow) || punyaKuota;
+
+    let tglLahirIndo = "-";
+    if (d.tanggal_lahir) {
+        const opsi = { day: 'numeric', month: 'long', year: 'numeric' };
+        tglLahirIndo = new Date(d.tanggal_lahir).toLocaleDateString("id-ID", opsi);
+    }
+
+    const inisial = (d.nama || "-").trim().split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
+
+    const riwayat = (d.riwayat_kas || []).slice().sort().reverse().slice(0, 3);
+    let riwayatHtml = riwayat.length
+        ? riwayat.map(r => `<div class="riwayat-row">✅ ${r}</div>`).join("")
+        : `<div class="riwayat-row" style="opacity:.6;">Belum ada riwayat pembayaran.</div>`;
+
+    const html = `
+        <div class="profil-header">
+            <div class="profil-avatar">${inisial || "?"}</div>
+            <h2>${d.nama || "-"}</h2>
+            <div class="profil-sabuk">🥋 Sabuk ${d.warna_sabuk || "-"}</div>
+        </div>
+
+        <div class="profil-info-grid">
+            <div class="profil-info-item"><div class="label">No. HP</div><div class="value">${d.nomor_hp || "-"}</div></div>
+            <div class="profil-info-item"><div class="label">Tgl Lahir</div><div class="value">${tglLahirIndo}</div></div>
+            <div class="profil-info-item"><div class="label">Berat Badan</div><div class="value">${d.berat_badan || 0} Kg</div></div>
+            <div class="profil-info-item"><div class="label">Tinggi Badan</div><div class="value">${d.tinggi_badan || 0} Cm</div></div>
+        </div>
+
+        <div class="profil-status-box ${isLunas ? 'lunas' : 'belum'}">
+            <div style="font-size:13px; opacity:.8; letter-spacing:1px;">STATUS KAS MINGGU INI</div>
+            <div style="font-size:20px; font-weight:900; margin-top:4px;">${isLunas ? '✅ LUNAS' : '❌ BELUM LUNAS'}</div>
+            ${punyaKuota ? `<div style="margin-top:6px; font-size:12px; color:#38bdf8;">Sisa Kuota: ${d.kuota_kas} Minggu</div>` : ''}
+        </div>
+
+        <h3 style="font-size:13px; letter-spacing:1px; color:#d4af37; margin-bottom:8px;">📜 RIWAYAT TERAKHIR</h3>
+        <div class="profil-riwayat-mini">${riwayatHtml}</div>
+        <button class="btn" style="width:100%; background:#3a3a3a; margin-bottom:18px;" onclick="lihatRiwayat('${id}')">📖 Lihat Semua Riwayat</button>
+
+        <div class="profil-action-grid">
+            <button class="btn btn-pay" ${isLunas ? 'disabled style="opacity:0.5; width:100%;"' : 'style="width:100%;"'} onclick="bayar('${id}')">💰 Bayar</button>
+            <button class="btn" style="width:100%; background-color:#eab308; color:#000; font-weight:bold;" onclick="koreksiKuotaManual('${id}')">🐷 Celengan</button>
+            <button class="btn btn-edit" style="width:100%;" onclick="editData('${id}')">✏️ Edit</button>
+            <button class="btn btn-delete" style="width:100%;" onclick="hapusDariProfil('${id}')">🗑️ Hapus</button>
+            ${!isLunas ? `<button class="btn btn-caution" style="width:100%; grid-column: 1 / -1;" onclick="peringatkan('${id}')">⚠️ Kirim Peringatan</button>` : ''}
+        </div>
+    `;
+
+    document.getElementById("profilAtlitBody").innerHTML = html;
+}
+
+// Hapus dari kartu profil, sekaligus menutup kartu profil setelah berhasil
+function hapusDariProfil(id) {
+    if (!confirm("Ingin Menendang Anak ini?")) return;
+    db.collection("siswa").doc(id).delete().then(() => {
+        tutupProfilAtlit();
+    });
+}
 
 function exportExcel(){
     db.collection("siswa").get().then(snapshot=>{
