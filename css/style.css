@@ -198,31 +198,31 @@
             box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        /* WARNA KHUSUS TOMBOL */
-        .actions .btn-export, .actions .btn-add {
-            background: linear-gradient(to bottom, #1e3a1e 0%, #112411 50%, #071007 100%);
-            border-color: #8da47e; color: #e2ecd8;
-        }
-        .actions .bmi-btn {
-            background: linear-gradient(to bottom, #784807 0%, #523002 50%, #301c01 100%);
-            border-color: #d4af37; color: #fcebb6;
-        }
-        .actions .btn-caution {
-            background: linear-gradient(to bottom, #7c2d12 0%, #5b1e0a 50%, #360f04 100%) !important;
-            border-color: #f97316; color: #ffedd5 !important;
-        }
-        .actions .btn-danger {
-            background: linear-gradient(to bottom, #7f1d1d 0%, #581c1c 50%, #3b0707 100%) !important;
-            border-color: #ef4444; color: #fee2e2 !important;
-            padding: 10px 20px;
-        }
-
         /* --- BUTTONS UMUM LAINNYA --- */
         .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #fff; transition: .2s; font-size: 13px; }
         .btn:hover { opacity: 0.8; transform: translateY(-1px); }
         .btn-edit { background: #3b82f6; }
         .btn-pay { background: #14b8a6; }
         .btn-delete { background: #ef4444; }
+
+        /* WARNA KHUSUS TOMBOL (berlaku universal, tidak hanya di dalam .actions) */
+        .btn-export, .btn-add {
+            background: linear-gradient(to bottom, #1e3a1e 0%, #112411 50%, #071007 100%);
+            border: 1px solid #8da47e; color: #e2ecd8;
+        }
+        .bmi-btn {
+            background: linear-gradient(to bottom, #784807 0%, #523002 50%, #301c01 100%);
+            border: 1px solid #d4af37; color: #fcebb6;
+        }
+        .btn-caution {
+            background: linear-gradient(to bottom, #7c2d12 0%, #5b1e0a 50%, #360f04 100%) !important;
+            border: 1px solid #f97316; color: #ffedd5 !important;
+        }
+        .btn-danger {
+            background: linear-gradient(to bottom, #7f1d1d 0%, #581c1c 50%, #3b0707 100%) !important;
+            border: 1px solid #ef4444; color: #fee2e2 !important;
+            padding: 10px 20px;
+        }
 
         /* SEARCH & STATS */
         .search-box input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #5c3a21; background: #130a01; color: #fff; margin: 15px 0; }
@@ -298,6 +298,55 @@
         .modal-content label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; color: #f3e5ab; }
         input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #5c3a21; background: #130a01; color: #16a34a; border-radius: 8px; }
         option { color: black; }
+
+        /* --- DAFTAR NAMA ATLIT (TRIGGER CARD) --- */
+        .daftar-atlit-trigger { margin-bottom: 20px; text-align: center; }
+        .daftar-atlit-trigger h3 { font-size: 16px; letter-spacing: 2px; color: #f3e5ab; }
+
+        /* --- MODAL: DAFTAR NAMA ATLIT --- */
+        .search-atlit-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #5c3a21; background: #130a01; color: #fff; margin-bottom: 15px; }
+        .atlit-list { max-height: 55vh; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1px solid #5c3a21; border-radius: 15px; }
+        .atlit-list-item {
+            padding: 16px 18px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f3e5ab;
+            border-bottom: 1px solid rgba(92, 58, 33, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+        }
+        .atlit-list-item:last-child { border-bottom: none; }
+        .atlit-list-item:hover, .atlit-list-item:active { background: rgba(212, 175, 55, 0.12); }
+        .atlit-list-item .chevron { opacity: 0.5; font-size: 13px; }
+        .atlit-list-empty { padding: 25px; text-align: center; opacity: 0.6; font-size: 14px; }
+
+        /* --- MODAL: PROFIL BIODATA ATLIT --- */
+        .profil-atlit-content { max-width: 480px; }
+        .profil-header { text-align: center; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 2px double #5c3a21; }
+        .profil-avatar {
+            width: 78px; height: 78px; border-radius: 50%; margin: 0 auto 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #d4af37, #8a6d1f);
+            font-family: 'Cinzel', serif; font-size: 30px; font-weight: 900; color: #1f1101;
+            border: 3px solid #f3e5ab; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .profil-header h2 { font-family: 'Cinzel', serif; font-size: 22px; color: #f3e5ab; letter-spacing: 1px; }
+        .profil-header .profil-sabuk { margin-top: 6px; font-size: 13px; color: #d4af37; letter-spacing: 1px; text-transform: uppercase; }
+        .profil-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+        .profil-info-item { background: rgba(0,0,0,0.3); border: 1px solid #5c3a21; border-radius: 12px; padding: 10px 12px; }
+        .profil-info-item .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.65; margin-bottom: 4px; }
+        .profil-info-item .value { font-size: 14px; font-weight: 700; color: #fff; }
+        .profil-status-box { text-align: center; padding: 14px; border-radius: 14px; margin-bottom: 18px; }
+        .profil-status-box.lunas { background: rgba(22,163,74,0.18); border: 1px solid rgba(22,163,74,0.4); }
+        .profil-status-box.belum { background: rgba(220,38,38,0.18); border: 1px solid rgba(220,38,38,0.4); }
+        .profil-riwayat-mini { background: rgba(0,0,0,0.3); border: 1px solid #5c3a21; border-radius: 12px; padding: 10px 14px; margin-bottom: 18px; font-size: 12px; max-height: 120px; overflow-y: auto; }
+        .profil-riwayat-mini .riwayat-row { padding: 5px 0; border-bottom: 1px dashed rgba(92,58,33,0.5); opacity: 0.85; }
+        .profil-riwayat-mini .riwayat-row:last-child { border-bottom: none; }
+        .profil-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .profil-action-grid .btn { width: 100%; }
 
         .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 12px; padding: 20px 0; border-top: 1px dashed #5c3a21; }
         
