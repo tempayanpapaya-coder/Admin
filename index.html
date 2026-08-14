@@ -1,259 +1,251 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMI Taekwondo Academy - Admin Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BMI Taekwondo Academy — Akses Ditangguhkan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0704;
+    --bg-1:#1a1108;
+    --bg-2:#2a1a0c;
+    --gold:#e8c165;
+    --gold-soft:#c9a24a;
+    --cream:#f3ead4;
+    --cream-dim:#c9bda3;
+    --alert:#a8321f;
+    --alert-glow:#e0552f;
+    --line:rgba(232,193,101,0.28);
+  }
 
-    <!-- ====== PWA: SUPPORT INSTALL DI ANDROID ====== -->
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#1f1101">
-    <meta name="mobile-web-app-capable" content="yes">
-    <!-- Dukungan tambahan untuk iOS Safari (bonus, walau target utama Android) -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BMI Taekwondo">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png">
-    <link rel="icon" href="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png">
+  *{box-sizing:border-box; margin:0; padding:0;}
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  html,body{
+    height:100%;
+    background:
+      radial-gradient(circle at 50% 15%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
+    font-family:'Manrope', sans-serif;
+    color:var(--cream);
+    overflow-x:hidden;
+  }
 
-    <link rel="stylesheet" href="./css/style.css">
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px 18px;
+    position:relative;
+  }
+
+  /* faint ember texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(232,193,101,0.35) 0, transparent 60%),
+      radial-gradient(1px 1px at 80% 20%, rgba(232,193,101,0.25) 0, transparent 60%),
+      radial-gradient(1.5px 1.5px at 60% 70%, rgba(232,193,101,0.2) 0, transparent 60%),
+      radial-gradient(1px 1px at 30% 85%, rgba(232,193,101,0.3) 0, transparent 60%),
+      radial-gradient(1px 1px at 90% 60%, rgba(232,193,101,0.2) 0, transparent 60%);
+    pointer-events:none;
+  }
+
+  .card{
+    position:relative;
+    width:100%;
+    max-width:460px;
+    border:1px solid var(--line);
+    border-radius:26px;
+    background:linear-gradient(180deg, rgba(42,26,12,0.85), rgba(10,7,4,0.92));
+    box-shadow:0 0 0 1px rgba(232,193,101,0.06), 0 30px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(168,50,31,0.25);
+    padding:38px 30px 32px;
+    text-align:center;
+    animation:rise 0.7s ease-out;
+  }
+
+  @keyframes rise{
+    from{opacity:0; transform:translateY(14px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  /* seal / badge */
+  .seal{
+    width:96px; height:96px;
+    margin:0 auto 20px;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .seal-ring{
+    position:absolute; inset:0;
+    border-radius:50%;
+    border:2px solid var(--alert-glow);
+    box-shadow:0 0 0 4px rgba(168,50,31,0.12), 0 0 24px rgba(224,85,47,0.55);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ box-shadow:0 0 0 4px rgba(168,50,31,0.12), 0 0 18px rgba(224,85,47,0.4);}
+    50%{ box-shadow:0 0 0 8px rgba(168,50,31,0.05), 0 0 34px rgba(224,85,47,0.75);}
+  }
+  .seal svg{ width:44px; height:44px; position:relative; z-index:1; }
+
+  .eyebrow{
+    letter-spacing:.22em;
+    font-size:11.5px;
+    text-transform:uppercase;
+    color:var(--alert-glow);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+
+  h1{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:.03em;
+    color:var(--gold);
+    text-shadow:0 0 18px rgba(232,193,101,0.25);
+    margin-bottom:6px;
+  }
+
+  .club{
+    font-size:12.5px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--cream-dim);
+    margin-bottom:24px;
+  }
+
+  .msg{
+    font-size:14.5px;
+    line-height:1.65;
+    color:var(--cream-dim);
+    margin-bottom:26px;
+  }
+  .msg b{ color:var(--cream); font-weight:600; }
+
+  .status-box{
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:rgba(0,0,0,0.25);
+    padding:14px 16px;
+    margin-bottom:26px;
+    text-align:left;
+  }
+  .status-row{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:13px;
+    padding:6px 0;
+  }
+  .status-row + .status-row{ border-top:1px dashed rgba(232,193,101,0.15); }
+  .status-label{ color:var(--cream-dim); }
+  .status-value{ font-weight:700; }
+  .status-value.pending{ color:var(--alert-glow); }
+  .status-value.ok{ color:#7fbf6a; }
+
+  .cta{
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 18px;
+    border-radius:12px;
+    font-weight:700;
+    font-size:14px;
+    text-decoration:none;
+    letter-spacing:.01em;
+    border:1px solid transparent;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .btn:active{ transform:scale(0.98); }
+
+  .btn-primary{
+    background:linear-gradient(180deg,#2f7a3d,#1f5c2c);
+    color:#eafbe6;
+    border-color:rgba(255,255,255,0.08);
+    box-shadow:0 8px 20px -8px rgba(31,92,44,0.7);
+  }
+  .btn-primary:hover{ filter:brightness(1.08); }
+
+  .btn-ghost{
+    background:transparent;
+    color:var(--gold-soft);
+    border-color:var(--line);
+  }
+  .btn-ghost:hover{ background:rgba(232,193,101,0.06); }
+
+  .foot{
+    margin-top:26px;
+    font-size:11px;
+    color:rgba(201,189,163,0.55);
+    letter-spacing:.03em;
+  }
+  .foot span{ color:var(--gold-soft); }
+
+  @media (prefers-reduced-motion: reduce){
+    .seal-ring{ animation:none; }
+    .card{ animation:none; }
+  }
+</style>
 </head>
 <body>
 
-<div class="header-top-jawa">
-    <div class="brand-wrap-jawa">
-        <div class="logo-box-jawa">
-            <img src="https://raw.githubusercontent.com/tempayanpapaya-coder/BMI/refs/heads/main/ChatGPT%20Image%2012%20Mei%202026%2C%2016.20.14..png" alt="BMI Logo">
-        </div>
-        <div class="brand-text-jawa">
-            <h1>BMI</h1>
-            <h2>TAEKWONDO ACADEMY</h2>
-            <p>Admin paling keren sedunia 😎</p>
-        </div>
+  <div class="card">
+    <div class="seal">
+      <div class="seal-ring"></div>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="10" width="14" height="10" rx="2" stroke="#e0552f" stroke-width="1.6"/>
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#e0552f" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="12" cy="15" r="1.6" fill="#e0552f"/>
+      </svg>
     </div>
-    <div class="clock-box-jawa">
-        <div id="clock-time">00:00:00</div>
-        <div id="clock-date">Nenggo Sakedhap...</div>
+
+    <div class="eyebrow">Akses Ditangguhkan</div>
+    <h1>BMI Taekwondo Academy</h1>
+    <div class="club">Sistem Administrasi Anggota</div>
+
+    <p class="msg">
+      Halaman ini <b>dinonaktifkan sementara</b> karena kewajiban administrasi
+      belum diselesaikan. Silakan hubungi pengelola untuk verifikasi dan
+      mengaktifkan kembali akses.
+    </p>
+
+    <div class="status-box">
+      <div class="status-row">
+        <span class="status-label">Status akun</span>
+        <span class="status-value pending">Tertunda</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Kewajiban administrasi</span>
+        <span class="status-value pending">Belum lunas</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Terakhir diperbarui</span>
+        <span class="status-value" id="tanggal">—</span>
+      </div>
     </div>
-</div>
 
-<div class="actions">
-    <button class="btn btn-export" onclick="toggleAbsensiPopup(true)">✅ Buka Absensi</button>
-    <button class="btn btn-export" onclick="exportExcel()">📄 Export Excel</button>
-    <button class="btn bmi-btn" onclick="toggleBMIApp(true)">⏱️ Stopwatch</button>
-    <button class="btn btn-add" onclick="openAddModal()">➕ Tambah Member</button>
-    <button class="btn btn-caution" onclick="prosesPotongKuotaMingguan()">🔄 Sinkronisasi Minggu Baru</button>
-    <button class="btn btn-danger" onclick="tombolResetManualBulan()">💥 Reset Total Bulanan</button>
-</div>
-
-<div class="card">
-    <h3>Jadwal Latihan</h3>
-   <button class="btn btn-add" style="margin-top:15px; color: #d4af37;" onclick="toggleJadwalAdmin(true)">📅 Buka Jadwal</button>
-
-</div>
-
-<div class="modal" id="jadwalModal">
-    <div class="modal-content jadwal-popup">
-        <h2 style="margin-bottom:20px;">Jadwal Global</h2>
-        <div id="jadwalAdmin"></div>
-        <button class="btn btn-add" style="width:100%; margin-top:15px; color: #d4af37" onclick="simpanJadwalGlobal()">💾 Simpan Jadwal</button>
-        <button class="btn btn-delete" style="width:100%; margin-top:10px; " onclick="toggleJadwalAdmin(false)">Tutup</button>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://wa.me/62XXXXXXXXXX?text=Halo%20Admin%2C%20saya%20ingin%20menyelesaikan%20administrasi%20akun%20BMI%20Taekwondo%20Academy" target="_blank" rel="noopener">
+        Hubungi Admin via WhatsApp
+      </a>
+      <a class="btn btn-ghost" href="#" onclick="location.reload(); return false;">
+        Muat Ulang Halaman
+      </a>
     </div>
-</div>
 
-<div class="modal" id="absensiModal">
-    <div class="modal-content jadwal-popup">
-        <h2 style="margin-bottom:20px;">✅ System Absensi Kehadiran</h2>
-        <div class="card" style="background:rgba(0,0,0,0.3); margin-bottom:15px; text-align:left; border-color:#5c3a21;">
-            <p>📅 Tanggal: <b id="absensi-tanggal">-</b></p>
-            <p>👥 Total Hadir: <b id="total-hadir">0</b> Siswa</p>
-        </div>
-        <div id="absensi-list" style="max-height:350px; overflow-y:auto; margin-bottom:20px;"></div>
-        <h2 style="margin-bottom:15px; color:#ffcc00;">🏆 Top 3 Kehadiran</h2>
-        <div id="ranking-kehadiran" style="background:rgba(0,0,0,0.3); border-radius:15px; padding:10px; border:1px solid #5c3a21;"></div>
-        <h2 style="margin-top:20px; margin-bottom:15px; color:#ef4444;">❌ Tidak Hadir Hari Ini</h2>
-        <div id="tidak-hadir-list" style="background:rgba(0,0,0,0.3); border-radius:15px; padding:10px; max-height:250px; overflow-y:auto;">Belum ada data</div>
-        <button class="btn btn-delete" style="width:100%; margin-top:15px;" onclick="toggleAbsensiPopup(false)">Tutup</button>
-    </div>
-</div>
+    <div class="foot">© BMI Taekwondo Academy — <span>Barisan Muda Indonesia</span></div>
+  </div>
 
-<div class="modal" id="bmiAppModal">
-    <div class="modal-content jadwal-popup">
-        <h2 style="margin-bottom:20px; color:#ffcc00;">Stopwatch</h2>
-        <div class="super-stopwatch">
-            <h3 class="sw-title">🥋 BMI TRAINING TIMER</h3>
-            <div class="stopwatch-ring">
-                <div id="stopwatchDisplay" class="sw-display">00:00:00</div>
-                <div class="sw-progress"><div id="progressBar"></div></div>
-            </div>
-            <div class="sw-buttons">
-                <button class="sw-btn start" onclick="startStopwatch()">▶ START</button>
-                <button class="sw-btn pause" onclick="pauseStopwatch()">⏸ PAUSE</button>
-                <button class="sw-btn reset" onclick="resetStopwatch()">⏹ RESET</button>
-                <button class="sw-btn lap" onclick="saveLap()">🏆 LAP</button>
-            </div>
-            <div class="round-box">
-                <div>🥊 ROUND <h2 id="roundText">1</h2></div>
-                <div>⏱ TARGET <input type="number" id="targetMinute" value="2" min="1" style="font-size:22px; font-weight:900; text-align:center;">
-                <p style="margin-top:6px; font-size:12px; opacity:.7;">Menit</p></div>
-            </div>
-            <div id="lapContainer" class="lap-container"><p style='opacity:.6'>Belum ada lap</p></div>
-        </div>
-        <div style="margin-top:20px;">
-            <button class="sw-btn reset" style="width:100%; padding:18px; font-size:16px; border-radius:20px;" onclick="toggleBMIApp(false)">❌ TUTUP STOPWATCH</button>
-        </div>
-    </div>
-</div>
+<script>
+  const el = document.getElementById('tanggal');
+  const now = new Date();
+  const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
+  const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][now.getMonth()];
+  el.textContent = `${hari}, ${now.getDate()} ${bulan} ${now.getFullYear()}`;
+</script>
 
-<div class="stats">
-    <div class="card"><h3>Total</h3><div class="num" id="totalMember">0</div></div>
-    <div class="card"><h3>Lunas</h3><div class="num" id="totalLunas">0</div></div>
-    <div class="card belum-card" onclick="showBelumBayar()">
-        <h3>Belum</h3>
-        <div class="num" id="totalBelum">0</div>
-        <div class="lihat-text">Klik untuk melihat</div>
-    </div>
-    <div class="card"><h3>Pemasukan</h3><div class="num" id="pemasukan">Rp0</div></div>
-</div>
-
-<div class="card daftar-atlit-trigger">
-    <h3>🥋 Data Atlit</h3>
-    <button class="btn btn-add" style="width:100%; margin-top:15px;" onclick="bukaDaftarAtlit()">📋 DAFTAR NAMA ATLIT</button>
-</div>
-
-<!-- Tabel lama disembunyikan, tetap dipakai internal untuk sinkronisasi data & stats -->
-<div style="display:none;">
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Cari nama siswa..." onkeyup="loadData()">
-    </div>
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama (Klik Riwayat)</th>
-                    <th>Sabuk</th>
-                    <th>No HP</th>
-                    <th>Tgl Lahir</th>
-                    <th>Fisik</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-        </table>
-    </div>
-</div>
-
-<!-- ====== MODAL: DAFTAR NAMA ATLIT ====== -->
-<div class="modal" id="daftarAtlitModal">
-    <div class="modal-content jadwal-popup">
-        <h2 style="margin-bottom:15px; color:#f3e5ab;">📋 Daftar Nama Atlit</h2>
-        <input type="text" id="searchAtlitInput" class="search-atlit-input" placeholder="🔍 Cari nama atlit..." oninput="filterDaftarAtlit()">
-        <div id="daftarAtlitList" class="atlit-list"></div>
-        <button class="btn btn-delete" style="width:100%; margin-top:15px;" onclick="tutupDaftarAtlit()">Tutup</button>
-    </div>
-</div>
-
-<!-- ====== MODAL: PROFIL BIODATA ATLIT ====== -->
-<div class="modal" id="profilAtlitModal">
-    <div class="modal-content jadwal-popup profil-atlit-content">
-        <div id="profilAtlitBody"></div>
-        <button class="btn btn-delete" style="width:100%; margin-top:15px;" onclick="tutupProfilAtlit()">Tutup</button>
-    </div>
-</div>
-
-<div class="modal" id="studentModal">
-    <div class="modal-content">
-        <h2 id="modalTitle" style="color:#f3e5ab;">Tambah Member</h2>
-        <form id="studentForm">
-            <input type="hidden" id="student-id">
-            <label>Nama Lengkap</label><input type="text" id="form-nama" required>
-            <label>Username</label><input type="text" id="form-username" required>
-            <label>Password</label><input type="text" id="form-password" required>
-            <label>Nomor HP</label><input type="text" id="form-hp">
-            <label>Tanggal Lahir</label><input type="date" id="form-tgl">
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1"><label>Berat (Kg)</label><input type="number" id="form-berat"></div>
-                <div style="flex:1"><label>Tinggi (Cm)</label><input type="number" id="form-tinggi"></div>
-            </div>
-            <label>Warna Sabuk</label>
-            <select id="form-sabuk">
-                <option>Putih</option><option>Kuning</option><option>Hijau</option>
-                <option>Biru</option><option>Merah</option><option>Hitam</option>
-            </select>
-            <label>Status Kas Mingguan</label>
-            <select id="form-status">
-                <option value="Belum Lunas">Belum Lunas</option>
-                <option value="Lunas">Lunas</option>
-            </select>
-            <button type="submit" class="btn btn-add" style="width:100%; margin-top:20px; background:#16a34a;">Simpan Data</button>
-            <button type="button" class="btn btn-delete" style="width:100%; margin-top:10px;" onclick="closeModal()">Batal</button>
-        </form>
-    </div>
-</div>
-
-<div class="modal" id="historyModal">
-    <div class="modal-content">
-        <h2 style="color:#f3e5ab;">Riwayat Pembayaran</h2>
-        <hr style="border-color:#5c3a21;"><br>
-        <div id="historyContent"></div>
-        <button class="btn btn-delete" style="width:100%; margin-top:20px;" onclick="closeHistory()">Tutup</button>
-    </div>
-</div>
-
-<div class="modal" id="belumBayarModal">
-    <div class="modal-content jadwal-popup">
-        <h2 style="margin-bottom:20px; color:#ef4444;">❌ Member Belum Bayar</h2>
-        <div id="belumBayarList" style="max-height:400px; overflow-y:auto;"></div>
-        <button class="btn btn-delete" style="width:100%; margin-top:20px;" onclick="toggleBelumModal(false)">Tutup</button>
-    </div>
-</div>
-
-<div class="footer">
-    <h2>Jika ada keluhan dengan aplikasi ini hubungi Bapaknya Tata</h2>
-    <p style="margin-top:5px;">BMI Taekwondo Academy Management System © 2026</p>
-</div>
-
-<!-- ====== BOTTOM NAVIGATION (MUNCUL OTOMATIS DI LAYAR HP) ====== -->
-<div class="bottom-nav" id="bottomNav">
-    <button class="bn-item" onclick="scrollToBeranda()">
-        <span class="bn-icon">🏠</span><span>Beranda</span>
-    </button>
-    <button class="bn-item" onclick="toggleAbsensiPopup(true)">
-        <span class="bn-icon">✅</span><span>Absensi</span>
-    </button>
-    <button class="bn-item bn-fab" onclick="openAddModal()">
-        <span class="bn-icon">➕</span><span>Tambah</span>
-    </button>
-    <button class="bn-item" onclick="toggleJadwalAdmin(true)">
-        <span class="bn-icon">📅</span><span>Jadwal</span>
-    </button>
-    <button class="bn-item" onclick="toggleDrawer(true)">
-        <span class="bn-icon">☰</span><span>Menu</span>
-        <span class="bn-dot" id="menuDot"></span>
-    </button>
-</div>
-
-<!-- ====== DRAWER "MENU LAINNYA" (bottom sheet) ====== -->
-<div class="drawer-overlay" id="drawerOverlay" onclick="if(event.target===this) toggleDrawer(false)">
-    <div class="drawer-sheet">
-        <div class="drawer-handle"></div>
-        <h2>⚙️ Menu Lainnya</h2>
-        <div class="drawer-grid">
-            <button class="btn btn-export" onclick="toggleDrawer(false); exportExcel()">📄 Export Excel</button>
-            <button class="btn bmi-btn" onclick="toggleDrawer(false); toggleBMIApp(true)">⏱️ Stopwatch</button>
-            <button class="btn btn-caution" onclick="toggleDrawer(false); prosesPotongKuotaMingguan()">🔄 Sinkron Minggu Baru</button>
-            <button class="btn btn-danger" onclick="toggleDrawer(false); tombolResetManualBulan()">💥 Reset Total Bulanan</button>
-            <button class="btn btn-add" id="installBtn" style="display:none; grid-column: 1 / -1;" onclick="installApp()">📲 Install Aplikasi ke HP</button>
-        </div>
-        <button class="btn" style="width:100%; margin-top:16px; background:#3a3a3a;" onclick="toggleDrawer(false)">Tutup</button>
-    </div>
-</div>
-
-<script src="./js/script.js"></script>
 </body>
 </html>
