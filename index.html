@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>BMI Taekwondo Academy — Akses Ditangguhkan</title>
+<title>BMI Taekwondo Academy — Status Akses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -15,6 +15,7 @@
     --gold-soft:#c9a24a;
     --cream:#f3ead4;
     --cream-dim:#c9bda3;
+    --amber:#e0a33a;
     --alert:#a8321f;
     --alert-glow:#e0552f;
     --line:rgba(232,193,101,0.28);
@@ -22,25 +23,22 @@
 
   *{box-sizing:border-box; margin:0; padding:0;}
 
-  html,body{
-    height:100%;
-    background:
-      radial-gradient(circle at 50% 15%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
-    font-family:'Manrope', sans-serif;
-    color:var(--cream);
-    overflow-x:hidden;
-  }
-
+  html,body{ height:100%; }
   body{
     min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex; align-items:center; justify-content:center;
     padding:28px 18px;
+    font-family:'Manrope', sans-serif;
+    color:var(--cream);
+    background:radial-gradient(circle at 50% 15%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
     position:relative;
+    overflow-x:hidden;
+    transition:background 0.6s ease;
+  }
+  body.blocked{
+    background:radial-gradient(circle at 50% 15%, #240a06 0%, #170804 45%, #050302 100%);
   }
 
-  /* faint ember texture */
   body::before{
     content:"";
     position:fixed; inset:0;
@@ -55,134 +53,97 @@
 
   .card{
     position:relative;
-    width:100%;
-    max-width:460px;
+    width:100%; max-width:460px;
     border:1px solid var(--line);
     border-radius:26px;
     background:linear-gradient(180deg, rgba(42,26,12,0.85), rgba(10,7,4,0.92));
-    box-shadow:0 0 0 1px rgba(232,193,101,0.06), 0 30px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(168,50,31,0.25);
-    padding:38px 30px 32px;
+    box-shadow:0 0 0 1px rgba(232,193,101,0.06), 0 30px 60px -20px rgba(0,0,0,0.7);
+    padding:38px 30px 30px;
     text-align:center;
     animation:rise 0.7s ease-out;
+    transition:box-shadow 0.6s ease;
+  }
+  body.blocked .card{
+    box-shadow:0 0 0 1px rgba(224,85,47,0.15), 0 30px 60px -20px rgba(0,0,0,0.8), 0 0 50px -10px rgba(168,50,31,0.4);
   }
 
-  @keyframes rise{
-    from{opacity:0; transform:translateY(14px);}
-    to{opacity:1; transform:translateY(0);}
-  }
+  @keyframes rise{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
 
-  /* seal / badge */
-  .seal{
-    width:96px; height:96px;
-    margin:0 auto 20px;
-    position:relative;
-    display:flex; align-items:center; justify-content:center;
-  }
+  .seal{ width:96px; height:96px; margin:0 auto 20px; position:relative; display:flex; align-items:center; justify-content:center; }
   .seal-ring{
-    position:absolute; inset:0;
-    border-radius:50%;
-    border:2px solid var(--alert-glow);
-    box-shadow:0 0 0 4px rgba(168,50,31,0.12), 0 0 24px rgba(224,85,47,0.55);
-    animation:pulse 2.4s ease-in-out infinite;
+    position:absolute; inset:0; border-radius:50%;
+    border:2px solid var(--amber);
+    box-shadow:0 0 0 4px rgba(224,163,58,0.1), 0 0 22px rgba(224,163,58,0.4);
+    transition:border-color 0.6s ease, box-shadow 0.6s ease;
+  }
+  body.blocked .seal-ring{
+    border-color:var(--alert-glow);
+    animation:pulse 2.2s ease-in-out infinite;
   }
   @keyframes pulse{
     0%,100%{ box-shadow:0 0 0 4px rgba(168,50,31,0.12), 0 0 18px rgba(224,85,47,0.4);}
-    50%{ box-shadow:0 0 0 8px rgba(168,50,31,0.05), 0 0 34px rgba(224,85,47,0.75);}
+    50%{ box-shadow:0 0 0 8px rgba(168,50,31,0.05), 0 0 36px rgba(224,85,47,0.8);}
   }
   .seal svg{ width:44px; height:44px; position:relative; z-index:1; }
+  #icon-clock{ display:block; }
+  #icon-lock{ display:none; }
+  body.blocked #icon-clock{ display:none; }
+  body.blocked #icon-lock{ display:block; }
 
   .eyebrow{
-    letter-spacing:.22em;
-    font-size:11.5px;
-    text-transform:uppercase;
-    color:var(--alert-glow);
-    font-weight:700;
-    margin-bottom:10px;
+    letter-spacing:.22em; font-size:11.5px; text-transform:uppercase;
+    color:var(--amber); font-weight:700; margin-bottom:10px;
+    transition:color 0.6s ease;
   }
+  body.blocked .eyebrow{ color:var(--alert-glow); }
 
   h1{
-    font-family:'Cinzel', serif;
-    font-weight:700;
-    font-size:26px;
-    letter-spacing:.03em;
-    color:var(--gold);
-    text-shadow:0 0 18px rgba(232,193,101,0.25);
-    margin-bottom:6px;
+    font-family:'Cinzel', serif; font-weight:700; font-size:26px; letter-spacing:.03em;
+    color:var(--gold); text-shadow:0 0 18px rgba(232,193,101,0.25); margin-bottom:6px;
   }
-
   .club{
-    font-size:12.5px;
-    letter-spacing:.28em;
-    text-transform:uppercase;
-    color:var(--cream-dim);
-    margin-bottom:24px;
+    font-size:12.5px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--cream-dim); margin-bottom:24px;
   }
 
-  .msg{
-    font-size:14.5px;
-    line-height:1.65;
-    color:var(--cream-dim);
-    margin-bottom:26px;
-  }
+  .msg{ font-size:14.5px; line-height:1.65; color:var(--cream-dim); margin-bottom:22px; }
   .msg b{ color:var(--cream); font-weight:600; }
 
   .status-box{
-    border:1px solid var(--line);
-    border-radius:14px;
-    background:rgba(0,0,0,0.25);
-    padding:14px 16px;
-    margin-bottom:26px;
-    text-align:left;
+    border:1px solid var(--line); border-radius:14px; background:rgba(0,0,0,0.25);
+    padding:14px 16px; margin-bottom:22px; text-align:left;
   }
-  .status-row{
-    display:flex; align-items:center; justify-content:space-between;
-    font-size:13px;
-    padding:6px 0;
-  }
+  .status-row{ display:flex; align-items:center; justify-content:space-between; font-size:13px; padding:6px 0; }
   .status-row + .status-row{ border-top:1px dashed rgba(232,193,101,0.15); }
   .status-label{ color:var(--cream-dim); }
   .status-value{ font-weight:700; }
-  .status-value.pending{ color:var(--alert-glow); }
-  .status-value.ok{ color:#7fbf6a; }
+  .status-value.warn{ color:var(--amber); }
+  .status-value.blocked{ color:var(--alert-glow); }
 
-  .cta{
-    display:flex; flex-direction:column; gap:10px;
+  .countdown{
+    display:flex; gap:10px; justify-content:center; margin-bottom:22px;
   }
+  .countdown.hidden{ display:none; }
+  .cd-box{
+    background:rgba(0,0,0,0.3); border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; min-width:56px;
+  }
+  .cd-num{ font-family:'Cinzel', serif; font-size:20px; color:var(--gold); font-weight:700; }
+  .cd-label{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--cream-dim); margin-top:2px; }
+
   .btn{
     display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:13px 18px;
-    border-radius:12px;
-    font-weight:700;
-    font-size:14px;
-    text-decoration:none;
-    letter-spacing:.01em;
-    border:1px solid transparent;
-    transition:transform .15s ease, filter .15s ease;
+    padding:13px 18px; border-radius:12px; font-weight:700; font-size:14px;
+    letter-spacing:.01em; border:1px solid var(--line); background:transparent;
+    color:var(--gold-soft); cursor:pointer; width:100%;
+    transition:transform .15s ease, background .15s ease;
   }
+  .btn:hover{ background:rgba(232,193,101,0.06); }
   .btn:active{ transform:scale(0.98); }
 
-  .btn-primary{
-    background:linear-gradient(180deg,#2f7a3d,#1f5c2c);
-    color:#eafbe6;
-    border-color:rgba(255,255,255,0.08);
-    box-shadow:0 8px 20px -8px rgba(31,92,44,0.7);
-  }
-  .btn-primary:hover{ filter:brightness(1.08); }
-
-  .btn-ghost{
-    background:transparent;
-    color:var(--gold-soft);
-    border-color:var(--line);
-  }
-  .btn-ghost:hover{ background:rgba(232,193,101,0.06); }
-
-  .foot{
-    margin-top:26px;
-    font-size:11px;
-    color:rgba(201,189,163,0.55);
-    letter-spacing:.03em;
-  }
+  .foot{ margin-top:24px; font-size:11px; color:rgba(201,189,163,0.55); letter-spacing:.03em; }
   .foot span{ color:var(--gold-soft); }
+  body.blocked .foot span{ color:var(--alert-glow); }
 
   @media (prefers-reduced-motion: reduce){
     .seal-ring{ animation:none; }
@@ -195,56 +156,104 @@
   <div class="card">
     <div class="seal">
       <div class="seal-ring"></div>
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg id="icon-clock" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="8" stroke="#e0a33a" stroke-width="1.6"/>
+        <path d="M12 8v4l3 2" stroke="#e0a33a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg id="icon-lock" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="5" y="10" width="14" height="10" rx="2" stroke="#e0552f" stroke-width="1.6"/>
         <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#e0552f" stroke-width="1.6" stroke-linecap="round"/>
         <circle cx="12" cy="15" r="1.6" fill="#e0552f"/>
       </svg>
     </div>
 
-    <div class="eyebrow">Akses Ditangguhkan</div>
+    <div class="eyebrow" id="eyebrow">Menunggu Konfirmasi</div>
     <h1>BMI Taekwondo Academy</h1>
     <div class="club">Sistem Administrasi Anggota</div>
 
-    <p class="msg">
-      Halaman ini <b>dinonaktifkan sementara</b> karena kewajiban administrasi
-      belum diselesaikan. Silakan hubungi pengelola untuk verifikasi dan
-      mengaktifkan kembali akses.
+    <p class="msg" id="msg">
+      Akses ke aplikasi ini akan <b>diblokir otomatis dan permanen</b> apabila
+      kewajiban administrasi belum dikonfirmasi selesai sebelum batas waktu berikut.
     </p>
+
+    <div class="countdown" id="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">--</div><div class="cd-label">Hari</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">--</div><div class="cd-label">Jam</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">--</div><div class="cd-label">Menit</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">--</div><div class="cd-label">Detik</div></div>
+    </div>
 
     <div class="status-box">
       <div class="status-row">
         <span class="status-label">Status akun</span>
-        <span class="status-value pending">Tertunda</span>
+        <span class="status-value warn" id="status-akun">Tertunda</span>
       </div>
       <div class="status-row">
-        <span class="status-label">Kewajiban administrasi</span>
-        <span class="status-value pending">Belum lunas</span>
+        <span class="status-label">Batas konfirmasi</span>
+        <span class="status-value" id="batas-tanggal">30 September 2026, 23:59</span>
       </div>
       <div class="status-row">
-        <span class="status-label">Terakhir diperbarui</span>
-        <span class="status-value" id="tanggal">—</span>
+        <span class="status-label">Diperiksa pada</span>
+        <span class="status-value" id="tanggal-sekarang">—</span>
       </div>
     </div>
 
-    <div class="cta">
-      <a class="btn btn-primary" href="https://wa.me/62895328077773text=Halo%20Admin%2C%20saya%20ingin%20menyelesaikan%20administrasi%20akun%20BMI%20Taekwondo%20Academy" target="_blank" rel="noopener">
-        Hubungi Admin via WhatsApp
-      </a>
-      <a class="btn btn-ghost" href="#" onclick="location.reload(); return false;">
-        Muat Ulang Halaman
-      </a>
-    </div>
+    <button class="btn" onclick="location.reload()">Periksa Ulang Status</button>
 
-    <div class="foot">© BMI Taekwondo Academy — <span>Barisan Muda Indonesia</span></div>
+    <div class="foot">© BMI Taekwondo Academy — <span id="foot-note">Barisan Muda Indonesia</span></div>
   </div>
 
 <script>
-  const el = document.getElementById('tanggal');
+  // ==== KONFIGURASI BATAS WAKTU ====
+  // September hanya sampai tanggal 30, jadi batas diset ke 30 Sept 2026, 23:59:59 waktu lokal perangkat.
+  const DEADLINE = new Date(2026, 8, 30, 23, 59, 59); // bulan 8 = September (index 0-based)
+
+  const body = document.body;
   const now = new Date();
+
   const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
   const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][now.getMonth()];
-  el.textContent = `${hari}, ${now.getDate()} ${bulan} ${now.getFullYear()}`;
+  document.getElementById('tanggal-sekarang').textContent =
+    `${hari}, ${now.getDate()} ${bulan} ${now.getFullYear()}`;
+
+  function renderBlocked(){
+    body.classList.add('blocked');
+    document.getElementById('eyebrow').textContent = 'Akses Diblokir Permanen';
+    document.getElementById('msg').innerHTML =
+      'Akses ke aplikasi ini telah <b>diblokir secara otomatis dan permanen</b> karena kewajiban administrasi tidak dikonfirmasi selesai sebelum batas waktu yang ditentukan.';
+    document.getElementById('status-akun').textContent = 'Diblokir';
+    document.getElementById('status-akun').classList.remove('warn');
+    document.getElementById('status-akun').classList.add('blocked');
+    document.getElementById('countdown').classList.add('hidden');
+    document.getElementById('foot-note').textContent = 'Pemblokiran Otomatis';
+  }
+
+  function renderPending(){
+    const tick = () => {
+      const diff = DEADLINE - new Date();
+      if (diff <= 0){
+        clearInterval(timer);
+        renderBlocked();
+        return;
+      }
+      const d = Math.floor(diff / (1000*60*60*24));
+      const h = Math.floor((diff / (1000*60*60)) % 24);
+      const m = Math.floor((diff / (1000*60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+      document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+      document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+      document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+    };
+    tick();
+    var timer = setInterval(tick, 1000);
+  }
+
+  if (new Date() >= DEADLINE){
+    renderBlocked();
+  } else {
+    renderPending();
+  }
 </script>
 
 </body>
